@@ -1,0 +1,337 @@
+/*
+* style.css
+* File includes custom css written later
+******************************************************************************/
+
+html { height: 100%; overflow:auto; }
+body { height: 100%; }
+.circular_progress_area{
+	/*border: 1px solid red;*/
+}
+
+
+.circular_progress_info{
+	/*border: 1px solid green;*/
+	width: 49%;
+}
+.circular_progress_circle{
+	/*border: 1px solid blue;*/
+	width: 49%;
+}
+
+.circular_progress_number{
+	font-weight: bold;
+}
+
+#dashboard_advertisement{
+
+height: 0;
+padding-bottom:59% ;
+}
+
+#dashboard_add_candidates a{
+	background: #FB1D1D;
+	color: #ffffff;
+}
+
+table thead th{
+	background-color: #0085C8 !important;
+	color: #ffffff !important;
+}
+
+#above_table_info_area{
+	/*border: 1px solid red;*/
+
+}
+
+#above_table_info_area_left{
+	font-size: 20px;
+	color: #232323	;
+}
+
+#above_table_info_area #dashboard_add_candidates a{
+	font-size: 18px;
+}
+
+.candidates_sections_heading_indiv{
+
+	background-color: #00C566;
+}
+
+.candidates_sections_heading_indiv a{
+	color: #ffffff;
+}
+
+#smart_card_person_name{
+color: #191919;
+font-size: 24px;
+}
+#smart_card_person_passport_no{
+color: #191919;
+font-size: 15px;
+
+}
+
+#back_to_home{
+	background-color: #0785C8;
+}
+#back_to_home a{
+    
+    color: #ffffff;
+}
+
+#smart_card_person_passport_status{
+	background-color: #00A958;
+	color: #ffffff;
+}
+.user_add_file_indiv_label{
+	
+}
+
+#document_person_photo{
+
+	
+	width: 15%;
+	height: 0;
+	padding-bottom: 15%;
+	/*border: 1px solid red;*/
+	margin: 0 auto;
+	
+}
+
+@media (max-width: 576px) {
+
+#document_person_photo{
+
+	margin: 0 auto;
+}
+
+#smart_card_person_name{
+
+	text-align: center !important;
+}
+
+#smart_card_person_passport_no{
+	text-align: center !important;
+}
+#smart_card_person_passport_status{
+
+	float: none !important;
+	margin-bottom: 20px;
+
+}
+
+}
+
+@media (max-width: 400px) {
+
+   #document_person_photo{
+   	  width: 98%;
+   	  padding-bottom: 70%;
+   }
+}
+#document_itself_photo{
+
+	width: 99%;
+	height: 0;
+	padding-bottom: 90%;
+	
+}
+
+.edit_photo_area{
+
+	width: 230px;
+	height: 0;
+	padding-bottom: 20%;
+	/*border: 1px solid red;*/
+	margin-bottom: 20px;
+}
+
+.preview_upload_indiv{
+
+	width: 230px;
+	height: 0;
+	padding-bottom: 20%;
+	border: 1px solid #ccc;
+
+}
+
+.bx-menu{
+	color: white;
+}
+#personal_details_profile_photo{
+	width: 230px;
+	height: 0;
+	padding-bottom: 20%;
+	margin: 0 auto;
+}
+#personal_details_profile_name{
+	color: #191919;
+	font-size: 24px;
+}
+#personal_details_profile_passport_no{
+	color: #191919;
+	font-size: 15px;
+}
+#btn_sign_in,#btn_forgot_pass,#btn_signup{
+	background-color: #F39200;
+}
+@media(max-width: 1200px){
+	#navbar-collapse{
+
+		  margin-left: 25px;
+		  margin-top: -60px;
+	
+		}
+}
+
+@media(width: 1200px){
+
+	#navbar-collapse{
+
+		  margin-top: 0;
+	
+		}
+
+
+}
+
+.candidates_sections_heading_indiv a{
+	text-decoration: none;
+}
+.avatar{
+	cursor: pointer;
+}
+
+#user_edit_link a{
+
+	font-size: 20px;
+	text-decoration: none;
+	
+
+
+}
+
+.datepicker th{
+	background-color: white !important;
+	color: #000000 !important;
+}
+#layout-navbar{
+	z-index: 10 ;
+}
+#payment_area,#company_create_area{
+
+	margin: 0 auto;
+	/*border: 1px solid red;*/
+	width: 60%;
+
+}
+
+.menu-item, .menu-link{
+	text-decoration: none;
+}
+.menu-vertical .menu-item.active:not(.open) > .menu-link
+{
+	/*font-weight: bold;*/
+	/*color: red;*/
+}
+}
+}
+
+
+
+  #personal_details_docs_all{
+
+    display: inline-block;
+    text-align: center;
+  }
+
+  .personal_details_doc_indiv{
+    
+    width: 100%;
+    height: 0;
+    padding-bottom: 70%;
+
+
+  }
+
+
+  .personal_details_doc_indiv a{
+
+  	/*width: 200px;
+    height: 0;
+    padding-bottom: 70%;
+
+    display: block;
+    border: 1px dashed green;*/
+
+
+  }
+
+ .personal_details_doc_indiv_wrapper{
+  width: 15%;
+  height: 0;
+  padding-bottom: 13%;
+  border: 1px solid #ccc;
+  display: inline-block;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+  @media (max-width: 650px) {
+  	 
+  	 .personal_details_doc_indiv_wrapper{
+  					width: 45%;
+  					padding-bottom: 40%;
+			}
+
+  } 
+
+.user_doc_indiv_description{
+  color: #000000 !important;
+  font-weight: bold;
+}
+
+.user_doc_indiv_wrapper{
+	margin-bottom: 10px;
+	border: 1px solid #ccc !important;
+}
+
+#user_existing_photo{
+
+	width: 200px;
+	height: 130px;
+}
+
+#passport_size_photo_preview_wrapper{
+	width: 200px;
+	height: 130px;
+	border: 1px solid #ccc;
+	margin-bottom: 10px;
+
+}
+#hidden_inputs{
+	display: none;
+	border: 1px solid red;
+
+}
+.indiv_status_show{
+	width: 250px;
+	margin: 0 auto;
+}
+
+.form-group.required .control-label:after { 
+ 	content: " *";
+	color: red;
+	vertical-align: middle;
+	font-weight: bold;
+	font-size: 20px;
+}
+.wait{
+	color: green;
+}
+
+#agent_add_wrapper{
+	width: 65%;
+	margin: 0 auto;
+}

@@ -1,0 +1,155 @@
+{
+  "menu": [
+    {
+      "url": "/home",
+      "name": "Dashboard",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "tables-basic"
+    },
+
+    {
+      "url": "/candidates/all",
+      "name": "Candidates",
+      "icon": "menu-icon tf-icons bx bx-group",
+      "slug": "show-candidates"
+    },
+
+
+
+    {
+      "url": "/calling/all",
+      "name": "Calling",
+      "icon": "menu-icon tf-icons bx bx-phone-call",
+      "slug": "calling-all"
+    },
+
+
+
+    {
+      "url": "/medical-formalities/all",
+      "name": "Medical Formalities",
+      "icon": "menu-icon tf-icons bx bx-plus-medical",
+      "slug": "medical-formalities-all"
+    },
+
+    
+
+    
+    {
+      "url": "/working-category/all",
+      "name": "Working Category",
+      "icon": "menu-icon tf-icons bx bx-task",
+      "slug": "working-category-all"
+    },
+
+
+
+    {
+      "url": "/visa/all",
+      "name": "Visa Sampling/E-visa",
+      "icon": "menu-icon tf-icons bx bx-landscape",
+      "slug": "visa-all"
+    },
+
+    {
+      "url": "/smart-card/all",
+      "name": "Smart Card",
+      "icon": "menu-icon tf-icons bx bx-card",
+      "slug": "smart-card-all"
+    },
+
+    {
+      "url": "/flight/all",
+      "name": "Flight Details",
+      "icon": "menu-icon tf-icons bx bxs-plane-take-off",
+      "slug": "flight-all"
+    },
+    
+
+    
+    
+
+    {
+      "url": "/user/add",
+      "name": "Add Candidates",
+      "icon": "menu-icon tf-icons bx bx-user",
+      "slug": "user-add"
+    },
+
+
+    {
+      "url": "/agent/add",
+      "name": "Add Agents",
+      "icon": "menu-icon tf-icons bx bx-user",
+      "slug": "agent-add"
+    },
+
+    {
+      "name": "Company",
+      "icon": "menu-icon tf-icons bx bx-dollar-circle",
+      "slug": "create",
+      "submenu": [
+        {
+          "url": "/company-category/create",
+          "name": "Create Company Category",
+          "slug": "create"
+          
+        },
+
+
+        {
+          "url": "/company-category/all",
+          "name": "Company Category List",
+          "slug": "create"
+          
+        },
+
+        {
+          "url": "/company-create/make",
+          "name": "Create a Company",
+          "slug": "create"
+          
+        },
+        {
+          "url": "/company/all",
+          "name": "Company List",
+          "slug": "pages-misc-under-maintenance"
+          
+        }
+      ]
+    },
+
+
+    {
+      "name": "Payment",
+      "icon": "menu-icon tf-icons bx bx-dollar-circle",
+      "slug": "create",
+      "submenu": [
+        {
+          "url": "/payment/create-schedule",
+          "name": "Create Schedule",
+          "slug": "create"
+          
+        },
+
+        {
+          "url": "/payment/make",
+          "name": "Make Payment",
+          "slug": "create"
+          
+        },
+        {
+          "url": "/pages/misc-under-maintenance",
+          "name": "Show Schedules",
+          "slug": "pages-misc-under-maintenance"
+          
+        }
+      ]
+    }
+
+
+    
+
+
+  ]
+}
