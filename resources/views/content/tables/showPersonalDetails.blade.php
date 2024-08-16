@@ -72,6 +72,7 @@
   $country="";
   $state_province="";
   $zip="";
+  $phone=$guardian_phone=$spouse_sibling_phone=$overseas_phone="";
   $phone="";
   $organization_category="";
   $company="";
@@ -87,10 +88,28 @@
   $calling_photo="";
   $visa_photo="";
   $flight_photo="";
+  $medical_condition="";
   $user_code="";
+
+  $division_id=$district_id=$thana_id=$postal_code="";
+
+  $approach_mode="";
 
   $dob_year=$dob_month=$dob_day="";
   $passport_expiry_date_year=$passport_expiry_date_month = $passport_expiry_date_day="";
+
+  $passport_submission_date = $user->passport_submission_date;
+ $medical_condition = $user->medical_condition;
+ $medical_ok = $user->medical_ok;
+ $calling_visa_ok= $user->calling_visa_ok;
+ $flight_ok = $user->flight_ok;
+
+ $approach_mode=$user->approach_mode;
+ $agent_id= $user->agent_id;
+
+
+
+
   $medical_date_year = $medical_date_month = $medical_date_day="";
   $departure_date_year = $departure_date_month = $departure_date_day="";
   $esd_to_reach_year= $esd_to_reach_month=$esd_to_reach_day="";
@@ -135,11 +154,22 @@
      $address= $user->address;
      $city = $user->city;
      $country = $user->country;
+     $division_id= $user->division_id;
+     $district_id = $user->district_id;
+     $thana_id = $user->thana_id;
+     $postal_code = $user->postal_code;
      $state_province= $user->state_province;
+     
      $zip= $user->zip;
      $email= $user->email;
+     
      $phone = $user->phone;
+     $guardian_phone=$user->guardian_phone;
+     $spouse_sibling_phone=$user->spouse_sibling_phone;
+     $overseas_phone=$user->overseas_phone;
+     
      $organization_category= $user->organization_category;
+
      $company = $user->company;
      $medical_centre = $user->medical_center;
      $medical_date = $user->medical_date;
@@ -292,7 +322,30 @@
 
             <div class="col-sm-3 ">
               <label for="countryOfCitizenship" class="form-label">Country Of Citizenship</label>
-              <input readonly  type="text" name="countryOfCitizenship" id="countryOfCitizenship" class="form-control" placeholder="Country Of Citizenship" value="{{$country_of_citizenship}}">
+
+
+              <select readonly id="countryOfCitizenship" name="countryOfCitizenship" class="form-control" autocomplete=off   disabled >
+                <option value="0">Select a  Country</option>
+
+                <?php
+
+                    foreach($countries as $country_indiv){
+
+                      $country_id = $country_indiv->id;
+
+                      ?>
+
+                      <option <?php if($country_id== $country_of_citizenship){echo 'selected="selected"';} ?> value="<?php echo $country_indiv->id; ?>"><?php  echo $country_indiv->en_short_name;  ?></option>
+
+
+                      <?php
+
+
+
+                    }// end of foreach loop
+
+                ?>
+              </select>
 
               <div class="invalid-feedback" id="countryOfCitizenship_error">
                 Country of citizenship is necessary
@@ -302,8 +355,36 @@
 
 
             <div class="col-sm-3 ">
-              <label for="nationality" class="form-label">Nnationality</label>
-              <input readonly  type="text" name="nationality" id="nationality" class="form-control" placeholder="Nationality" value="{{$nationality}}">
+              <label for="nationality" class="form-label">Nationality</label>
+              <!-- <input readonly  type="text" name="nationality" id="nationality" class="form-control" placeholder="Nationality" value="{{$nationality}}"> -->
+
+
+
+
+
+              <select id="nationality" name="nationality" class="form-control" disabled  >
+                <option value="0" <?php if($nationality===0){ echo 'selected="selected"';} ?>>Select a Nationality</option>
+                <?php 
+
+                    foreach($countries as $country_indiv){
+
+                      $country_id = $country_indiv->id;
+                      ?>
+
+                      <option <?php if($country_id== $nationality){ echo 'selected="selected"';} ?> value="<?php echo $country_indiv->id; ?>"><?php echo $country_indiv->en_short_name.'-'.$country_id.' ('.$country_indiv->nationality.' )' ; ?></option>
+
+
+
+                      <?php
+
+
+
+                    }// end of foreach loop
+
+
+
+                ?>
+              </select>
 
               <div class="invalid-feedback" id="nationality_error">
                 
@@ -349,13 +430,13 @@
 
                 <div class="form-check">
                     <input readonly  class="form-check-input" type="radio" name="marital_status" id="marital_status_1" 
-                    value="<?php echo trim('single');?>"  <?php if($marital_status==trim("single")){ echo 'checked';} ?>>
+                    value="<?php echo trim('single');?>"  <?php if($marital_status==trim("single")){ echo 'checked';} ?> disabled>
                     <label class="form-check-label" for="marital_status">Single</label>
                 </div>
                 
                 <div class="form-check">
                   <input readonly  class="form-check-input"  value="<?php echo trim('married');?>" type="radio" name="marital_status" 
-                  id="marital_status2" <?php if($marital_status==trim("married")){ echo 'checked';} ?> >
+                  id="marital_status2" <?php if($marital_status==trim("married")){ echo 'checked';} ?> disabled >
                   <label class="form-check-label" for="marital_status2">
                   Married
                   </label>
@@ -375,12 +456,12 @@
              <label  class="form-label">Gender</label>
 
                 <div class="form-check">
-                    <input readonly  class="form-check-input" type="radio" name="gender" id="gender1" value="<?php echo trim('male');?>"  <?php if($gender==trim("male")){ echo 'checked';} ?>>
+                    <input readonly  class="form-check-input" type="radio" name="gender" id="gender1" value="<?php echo trim('male');?>"  <?php if($gender==trim("male")){ echo 'checked';} ?> disabled>
                     <label class="form-check-label" for="gender1">Male</label>
                 </div>
                 
                 <div class="form-check">
-                  <input readonly  class="form-check-input" type="radio" name="gender" id="gender2" value="<?php echo trim('female');?>"  <?php if($gender==trim("female")){ echo 'checked';} ?> >
+                  <input readonly  class="form-check-input" type="radio" name="gender" id="gender2" value="<?php echo trim('female');?>"  <?php if($gender==trim("female")){ echo 'checked';} ?>  disabled >
                   <label class="form-check-label" for="gender2">
                   Female
                   </label>
@@ -396,39 +477,142 @@
           </div><!-- end of class row-->
 
 
+
+
+        <div class="row mb-3 gy-3">
+
+          <div class="col-sm-4">
+            <label for="division"  class="form-label">Division</label>
+
+            <select id="division" name="division" class="form-control" autocomplete=off disabled>
+              <option value="">Select a Division</option>
+              <?php
+
+                foreach($divisions as $division_indiv){
+
+                          //$division_id_now = $division_indiv->id               
+                  ?>
+
+                  <option   value="<?php  echo $division_indiv->id; ?>"><?php echo $division_indiv->name; ?></option>
+
+
+                  <?php
+
+
+                }// end of foreach loop
+
+
+              ?>
+            </select>
+
+            <div class="invalid-feedback" id="division_error">Division is necessary</div>
+            
+          </div>
+
+
+
+          <div class="col-sm-4">
+            <label for="district"  class="form-label">District</label>
+
+            <select id="district" name="district" class="form-control" autocomplete=off disabled>
+              <option value="">Select a District</option>
+              
+            </select>
+
+            <div class="invalid-feedback" id="district_error">District is necessary</div>
+            
+          </div>
+
+
+
+
+
+          <div class="col-sm-4">
+            <label for="district"  class="form-label">Thana</label>
+
+            <select id="thana" name="thana" class="form-control" autocomplete=off disabled>
+              <option value="">Select a Thana</option>
+              
+            </select>
+
+            <div class="invalid-feedback" id="thana_error">Thana is necessary</div>
+            
+          </div>
+
+        
+        </div> 
+
+
+        
         <div class="row mb-3 gy-3">
           
-          <div class="col-sm-7">
+          <div class="col-sm-2">
+            <label for="post_code"  class="form-label">Postal Code</label>
+
+            <input type="text" id="post_code" name="post_code" class="form-control" placeholder="Postal Code" value="{{$postal_code}}" />
+
+            <div class="invalid-feedback" id="post_code_error">Postal Code is necessary</div>
+            
+          </div>
+
+
+
+          <div class="col-sm-2">
+
+            <label for="city" for="city" class="form-label">CITY</label>
+
+            <input type="text" id="city" name="city" class="form-control" placeholder="City/Town" value="{{$city}}"  />
+            <div class="invalid-feedback" id="city_error">City is necessary</div>
+            
+          </div>
+
+          <div class="col-sm-8">
             <label for="address"  class="form-label">ADDRESS</label>
 
-            <input readonly  type="text" id="address" name="address" class="form-control" placeholder="Address" value="{{$address}}" />
+            <input type="text" id="address" name="address" class="form-control" placeholder="Address" value="{{$address}}" />
 
             <div class="invalid-feedback" id="address_error">Address is necessary</div>
             
           </div>
 
-          <div class="col-sm-5">
-
-            <label for="city" for="city" class="form-label">CITY</label>
-
-            <input readonly  type="text" id="city" name="city" class="form-control" placeholder="City/Town" value="{{$city}}"  />
-            <div class="invalid-feedback" id="city_error">City is necessary</div>
-            
-          </div>
 
         </div><!-- end of class row-->
         
+
+
+
         <div class="row mb-3 gy-3">
 
-          <div class="col-sm-4">
-            <label for="country"  class="form-label">COUNTRY</label>
-            <input readonly  type="text" name="country" id="country" class="form-control" value="{{$country}}" placeholder="Country">
+          <div class="col-sm-3">
+            <label for="country"  class="form-label">DESTINATION COUNTRY</label>
+            <!-- <input type="text" name="country" id="country" class="form-control" value="{{$country}}" placeholder="Country"> -->
+
+
+            <select id="country" name="country" class="form-control" autocomplete=off disabled>
+              <option value="0">Select a Country</option>
+              <?php
+                foreach($countries as $country_indiv){
+
+                  $country_id=$country_indiv->id;
+
+                  ?>
+
+
+                  <option <?php if($country_id== $country){ echo 'selected="selected"';}  ?> value="<?php echo $country_indiv->id; ?>"><?php echo $country_indiv->en_short_name;  ?></option>
+
+
+                  <?php
+
+                }
+
+              ?>
+            </select>
             <div class="invalid-feedback" id="country_error">Country is necessary</div>
           </div>
 
-          <div class="col-sm-4">
+          <div class="col-sm-2">
             <label class="form-label" for="state_province">STATE/PROVINCE</label>
-            <input readonly  type="text" name="state_province" class="form-control" id="state_province" value="{{$state_province}}" placeholder="State/Province">
+            <input type="text" name="state_province" class="form-control" id="state_province" value="{{$state_province}}" placeholder="State/Province">
 
             <div class="invalid-feedback" id="state_province_error">State/province is necessary</div>
             
@@ -436,76 +620,168 @@
 
 
 
-          <div class="col-sm-4">
+          <div class="col-sm-2">
             <label class="form-label" for="zip">Zip Code</label>
-            <input readonly  type="text" name="zip" id="zip" class="form-control" value="" placeholder="Zip Code" value="{{$zip}}">
+            <input type="text" name="zip" id="zip" class="form-control"  placeholder="Zip Code" value="{{$zip}}">
             <div class="invalid-feedback" id="zip_error">ZIP is necessary</div>
+          </div>
+
+
+
+          <div class="col-sm-5">
+
+
+
+            <label for="email"  class="form-label">EMAIL</label>
+            <input type="text"  name="email" id="email" class="form-control" value="{{$email}}" placeholder="Email">
+            <div class="invalid-feedback" id="email_error">A valid and unique email is necessary</div>
           </div>
           
         </div><!-- end of class row -->
 
 
 
-        <div class="row  mb-3 gy-3">
 
-          <div class="col-sm-4">
-            <label for="email"  class="form-label">EMAIL</label>
-            <input readonly  type="text" readonly name="email" id="email" class="form-control" value="{{$email}}" placeholder="Email">
-            <div class="invalid-feedback" id="email_error">A valid and unique email is necessary</div>
-          </div>
 
-          <div class="col-sm-4">
-            <label class="form-label" for="phone">PHONE</label>
-            <input readonly  type="text" name="phone" class="form-control" id="phone" value="" placeholder="Phone">
+          <div class="row  mb-3 gy-3">
+
+          
+
+          <div class="col-sm-3">
+            <label class="form-label" for="phone">Candidate's PHONE</label>
+            <input type="text" name="phone" class="form-control" id="phone" value="{{$phone}}" placeholder="Phone" readonly>
             <div class="invalid-feedback" id="phone_error">Phone number is necessary</div>
             
           </div>
 
 
 
-          <div class="col-sm-4">
-                <label for="organization_category"  class="form-label">Organization Category</label>
-                <input readonly  type="text" name="organization_category" id="organization_category" class="form-control" value="{{$organization_category}}" placeholder="Organization Category">
-                <div class="invalid-feedback" id="organization_category_error"></div>
-          </div>
-          
+        <div class="col-sm-3">
+            <label class="form-label" for="guardian_phone">Guardian's PHONE</label>
+            <input type="text" name="guardian_phone" class="form-control" id="guardian_phone" value="{{$guardian_phone}}" placeholder="Guardian's Phone" readonly>
+            <div class="invalid-feedback" id="guardian_phone_error">Guardian's phone number is necessary</div>
+            
+        </div>          
+
+
+
+
+
+        <div class="col-sm-3">
+            <label class="form-label" for="spouse_sibling_phone">Spouse / Sibling's PHONE</label>
+            <input type="text" name="spouse_sibling_phone" class="form-control" id="spouse_sibling_phone" 
+            value="{{$spouse_sibling_phone}}" placeholder="Spouse / Sibling's Phone" readonly>
+            <div class="invalid-feedback" id="spouse_sibling_phone_error">Spouse/Sibling's phone number is necessary</div>
+            
+        </div>          
+
+
+
+
+        <div class="col-sm-3">
+            <label class="form-label" for="overseas_phone">overseas PHONE</label>
+            <input type="text" name="overseas_phone" class="form-control" id="overseas_phone" value="{{$overseas_phone}}" placeholder="Overseas Phone" readonly>
+            <div class="invalid-feedback" id="overseas_phone_error">Overseas phone number is necessary</div>
+            
+        </div>          
+
+
         </div><!-- end of class row -->
 
-
-
+        
 
 
         <div class="row  mb-3 gy-3">
 
           
 
-          <div class="col-sm-4">
+          <div class="col-sm-3">
             <label class="form-label" for="company">Company</label>
-            <input readonly  type="text" name="company" class="form-control" id="company" value="{{$company}}" placeholder="Company">
+            
+
+
+            <select class="form-select_000 form-control" name="company" id="company"  autocomplete=off disabled>
+                      <option value="" selected>Select a Company</option>
+                      <?php
+
+                          foreach($companies as $company_indiv){
+                            ?>
+
+                            <option <?php if($company_indiv->id == $company){ echo 'selected="selected"';}  ?> value="<?php echo $company_indiv->id; ?>">
+                              <?php echo $company_indiv->company_name;  ?> (<?php echo $company_indiv->company_type; ?>)</option>
+
+                            <?php
+
+
+                          }// end of foreach loop
+
+                      ?>
+                </select>
             <div class="invalid-feedback" id="company_error"></div>
             
           </div>
 
 
+          <div class="col-sm-2">
+                <label for="organization_category"  class="form-label">Organization Category</label>
+                <input type="text" name="organization_category" id="organization_category" class="form-control" value="{{$organization_category}}" placeholder="Organization Category" readonly>
+                <div class="invalid-feedback" id="organization_category_error"></div>
+          </div>
+          
 
-          <div class="col-sm-4">
+          <div class="col-sm-2">
             <label class="form-label" for="medical_centre">Medical Center</label>
-            <input readonly  type="text" name="medical_centre" class="form-control" id="medical_centre" value="{{$medical_centre}}" placeholder="Medical Centre">
+            <input type="text" name="medical_centre" class="form-control" id="medical_centre" value="{{$medical_centre}}" placeholder="Medical Centre" readonly>
             <div class="invalid-feedback" id="medical_centre_error"></div>
             
           </div>
 
 
 
-          <div class="col-sm-4">
+          <div class="col-sm-2">
             <label class="form-label" for="medical_date">Medical Date</label>
-            <input readonly  type="text" name="medical_date" class="form-control" id="medical_date" value="" placeholder="Medical Date" readonly>
+            <input type="text" name="medical_date" class="form-control" id="medical_date" value="" placeholder="Medical Date" readonly>
             <div class="invalid-feedback" id="medical_date_error"></div>
             
           </div>
 
+
+
+            <div class="col-sm-2">
+
+             <label  class="form-label">Medical Condition</label>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="medical_condition" id="medical_condition" value="1" <?php if($medical_condition==1){ echo 'checked'; } ?>  disabled >
+                    <label class="form-label" for="medical_condition">Fit</label>
+                </div>
+                
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="medical_condition" id="medical_condition_unfit" value="0"  <?php if($medical_condition==0){ echo 'checked'; } ?> disabled >
+                  <label class="form-label" for="marital_status2">
+                  Unfit
+                  </label>
+                </div>
+
+
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="medical_condition" id="medical_condition_unfit" value=""  <?php if($medical_condition==null){ echo 'checked'; } ?> disabled>
+                  <label class="form-label" for="marital_status2">
+                  UnKnown
+                  </label>
+                </div>
+
+                <div class="invalid-feedback" id="marital_status_error">Marital status is necessary</div>
+
+
+            </div>
+
           
         </div><!-- end of class row -->
+
+
+
+
 
 
 
@@ -541,7 +817,110 @@
         </div>
 
 
-        <!-- <input readonly  type="text" value="<?php echo request()->segment(count(request()->segments())) ?>"  name="user_id"> -->
+
+        <div class="row  mb-3 gy-3">
+
+          
+
+          <div class="col-sm-4 form-check_000">
+            
+            <input type="checkbox" name="medical_formalities_ok" class="form-check-input" id="medical_formalities_ok"  <?php if($medical_ok==1){
+              echo 'checked'; } ?>  disabled >
+
+            <label class="form-label" for="medical_formalities_ok">Medical Formalities OK</label>
+            <div class="invalid-feedback" id="medical_formalities_ok_error"></div>
+            
+          </div>
+
+
+          <div class="col-sm-4 form-check_000">
+            
+            <input type="checkbox" name="calling_visa_ok" class="form-check-input" id="calling_visa_ok" 
+              <?php if($calling_visa_ok==1){
+              echo 'checked'; } ?> disabled >
+            <label class="form-label" for="calling_visa_ok">Calling Visa Ok</label>
+            <div class="invalid-feedback" id="calling_visa_ok_error"></div>
+            
+          </div>
+
+
+          <div class="col-sm-4 form-check_000">
+            
+            <input type="checkbox" name="flight_ok" class="form-check-input" id="flight_ok" 
+             <?php if($flight_ok==1){echo 'checked'; } ?> disabled >
+             
+            <label class="form-label" for="flight_ok">Flight OK</label>
+            <div class="invalid-feedback" id="flight_ok_error"></div>
+            
+          </div>
+
+        </div>
+
+
+
+
+
+
+
+        <div class="row  mb-3 gy-3">
+
+          <div class="col-sm-3">
+
+             <label  class="form-label">Approach</label>
+
+                <div class="form-check">
+                    <input class="form-check-input approach_mode" type="radio" name="approach_mode" id="approach_mode_direct" <?php if($approach_mode==1){echo 'checked';}  ?> value="1" disabled >
+                    <label class="form-label" for="approach_mode_direct">Direct</label>
+                </div>
+                
+                <div class="form-check">
+                  <input class="form-check-input approach_mode" type="radio" name="approach_mode" id="approach_mode_via_agent" value="2" <?php if($approach_mode==2){ echo 'checked';}  ?>  disabled>
+                  <label class="form-label" for="approach_mode_via_agent">
+                  Via Agent
+                  </label>
+                </div>
+
+                <div class="invalid-feedback" id="marital_status_error">Marital status is necessary</div>
+
+
+            </div>
+
+
+
+            <div class="col-sm-3">
+
+             <label  class="form-label">Agents</label>
+
+                <select class="form-select_000 form-control" name="agent" id="agent" disabled autocomplete=off>
+                      <option value="" selected>Select an Agent</option>
+                      <?php
+
+                          foreach($agents as $agent_indiv){
+                            ?>
+
+                            <option <?php if($agent_id== $agent_indiv->id){ echo 'selected="selected"';}  ?> value="<?php echo $agent_indiv->id; ?>">
+                              <?php echo $agent_indiv->first_name.' '.$agent_indiv->middle_name.' '.$agent_indiv->last_name;  ?></option>
+
+                            <?php
+
+
+                          }// end of foreach loop
+
+                      ?>
+                </select>
+                
+                
+                <div class="invalid-feedback" id="marital_status_error">Agent  is necessary</div>
+
+
+            </div>
+
+
+
+
+            
+
+        </div>        <!-- <input readonly  type="text" value="<?php echo request()->segment(count(request()->segments())) ?>"  name="user_id"> -->
 
 
         <div class="mb-4">Documentation</div>
@@ -1339,6 +1718,11 @@
 
 <script type="text/javascript">
   
+  $.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      }
+    });
 
     function readURL(input) {
         if (input.files && input.files[0]) {
@@ -1364,6 +1748,140 @@ $(document).ready(function() {
                     autoclose:true
                   
                 });
+
+
+    $("#agent,#country,#nationality_0000,#countryOfCitizenship,#division,#district,#thana,#company").select2();
+
+
+setTimeout(function(){
+
+    var division_id = '<?php echo $division_id; ?>';
+      // alert(" 9999000  division_id = "+ division_id);
+      // alert("division_id = "+ division_id);
+      if(division_id==0){
+        division_id="";
+
+      }
+      $("#division").val(division_id).trigger('change');
+
+  },300);
+
+
+
+    $("#division").change(function(){
+
+        $("#thana").find('option').not(':first').remove();
+        var $division = $(this);
+
+        var division_id = $division.val();
+
+        // alert(" division_id = "+division_id);
+
+        $.ajax({
+            method:"POST",
+            url:"{{URL::to('/fetch_districts_accordingly')}}",
+            data:{'division_id':division_id},
+            success: function(data, status, xhr){
+              var options='';
+              data_parsed= $.parseJSON(data);
+              if(window.console){
+                console.log(data_parsed);
+
+              }
+              for( var  i=0; i<data_parsed.length; i++){
+                var data_indiv= data_parsed[i];
+                var data_id=data_indiv.id;
+                var data_name=data_indiv.name;
+
+                options+='<option value="'+data_id+'">'+data_name+'</option>';
+
+
+              }//end of foreach
+
+              if(window.console){
+
+                console.log(options);
+
+              }
+
+              $("#district").find('option').not(':first').remove();
+              $("#district").append(options).fadeOut(1000).fadeIn(9999999);
+
+              var district_id = '<?php echo $district_id; ?>';
+
+              // alert(" district_id = "+ district_id);
+
+              if(district_id==0){
+                district_id="".trim();
+
+              }
+
+              $("#district").val(district_id).trigger('change');
+
+            },
+            error: function(jqXhr, textStatus, errorMessage){
+
+            }
+
+        });
+
+
+
+    });// end of division change 
+
+
+
+
+    $("#district").change(function(){
+
+        var $district = $(this);
+
+        var district_id = $district.val();
+
+        $.ajax({
+            method:"POST",
+            url:"{{URL::to('/fetch_thanas_accordingly')}}",
+            data:{'district_id':district_id},
+            success: function(data, status, xhr){
+              var options='';
+              data_parsed= $.parseJSON(data);
+              if(window.console){
+                console.log(data_parsed);
+
+              }
+              for( var  i=0; i<data_parsed.length; i++){
+                var data_indiv= data_parsed[i];
+                var data_id=data_indiv.id;
+                var data_name=data_indiv.name;
+
+                options+='<option value="'+data_id+'">'+data_name+'</option>';
+
+
+              }//end of foreach
+
+              if(window.console){
+
+                console.log(options);
+
+              }
+
+              $("#thana").find('option').not(':first').remove();
+              $("#thana").append(options).fadeOut(1000).fadeIn(9999999);
+
+              var thana_id = '<?php echo $thana_id; ?>';
+              $("#thana").val(thana_id);
+
+            },
+            error: function(jqXhr, textStatus, errorMessage){
+
+            }
+
+        });
+
+
+
+    });// end of district change 
+
 
 var dob_found='{{$dob}}';
     

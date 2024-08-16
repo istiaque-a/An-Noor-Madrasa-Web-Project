@@ -2,2182 +2,1610 @@
 
 namespace App\Http\Controllers;
 
+
+
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Doc;
-use Response;
-use Image; // From intervention image package
-use File;
-use Auth;
-use DB;
-use Carbon\Carbon;
-use App\Models\Country;
-use App\Models\Division;
-use App\Models\Company;
+use App\Models\TeacherStaff;
+use App\Models\Fujala;
+use App\Models\Student;
+use App\Models\Donor;
+use App\Models\Volunteer;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
+// use Datatables;
+use Yajra\DataTables\DataTables;
+
+
+
 class UserController extends Controller
 {
-
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-
-
-        // echo " first name =".$request->first_name;
-            
-
-
-        $rules=array(
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'date_of_birth'=> 'required',
-            /*
-            'first_lang'=> 'required',
-            'countryOfCitizenship'=> 'required',*/
-            'passport_no'=> ['required','unique:users,passport_num','min:3'],
-            // 'passport_no'=> ['required','min:3'],
-            /*
-            'passport_expiry_date'=> 'required',
-            'nid_number'=> 'required',
-            */
-            // 'marital_status'=> 'required',
-            'gender'=> 'required',
-            /*
-            'address'=> 'required',
-            'city'=> 'required',
-            'country'=> 'required',
-            'state_province'=> 'required',
-            'zip'=> 'required',*/
-            'email'=> ['unique:users'],
-
-            
-            // 'phone'=> 'required'
-            
-          );
-
-        $validator = \Validator::make($request->all(), $rules);
-        
-        if ($validator->fails())
         {
-            //return response()->json(['errors'=>$validator->errors()->all()]);
+            $this->middleware('auth', ['only' => 'getTeachersAndStaff']);
 
-           return Response::json(array(
-                                        'success' => false,
-                                        'errors' => $validator->getMessageBag()->toArray()
+            // $this->middleware('auth');
+        }
+    public function register_with_password(Request $request){
 
-                                      ), 400); // 400 being the HTTP code for an invalid request.
-        }else{
+        $validator = Validator::make($request->all(), [
 
+           
+            'mobile'=> 'required|string|unique:users',
+            'password' => 'required|string|min:6|same:password_again',
+            'password_again'=>'required|string|min:6',
+            
+            
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $user=User::create([
+            'mobile'=> $request->input('mobile'),
+            'password'=> Hash::make($request->input('password')),
+
+        ]);
+
+        $user_id=$user->id;
+
+        $token=rand(0,99999999999);
+
+        return response()->json(['token'=>$token,'user_id'=>$user_id], 200);
+
+
+
+    }//
+
+    public function register(Request $request)
+    {
+        $user_type=$request->input('user_type');
+        $user_id=$request->input('user_id');
+         $token=rand(0,99999999999);
+
+        if($user_type==1){
+
+        
+        $validator = Validator::make($request->all(), [
+
+            'user_type' => 'required', 
+            // 'mobile_own'=> 'required|string|unique:users',
+            'name' => 'required|string',
+            'father_name' => 'required|string',
+            // 'dob'=> 'required|string',
+            'permanent_address'=>'required|string',
+            'temporary_address'=>'required|string',
+            'email' => 'required|email|unique:users',
+            /*'password' => 'required|string|min:6|same:password_again',
+            'password_again'=>'required|string|min:6',
+            */
+            
+        ]);
+
+        }// end of if($user_type==1){
+
+        if($user_type==2){
+
+            $validator = Validator::make($request->all(), [
+
+            'mobile_own'=> 'required|string',
+            'name' => 'required|string',
+            'father_name' => 'required|string',
+            
+
+            'permanent_address_village'=> 'required|string',
+            'permanent_address_post_office'=> 'required|string',
+            'permanent_address_thana'=> 'required|string',
+            'permanent_address_district'=> 'required|string',
+            'permanent_address_division'=> 'required|string',
+            'temporary_address'=> 'required|string',
+
+            'email' => 'email|unique:users',
+            /*'password' => 'required|string|min:6|same:password_again',
+            'password_again'=>'required|string|min:6',*/
+            
+            // 'custom_field' => 'required', // Add your custom field validation here
+            //'user_type' => 'required', // Add your custom field validation here
+        ]);
+
+        }    
+
+
+
+        if($user_type==3){
+
+            $validator = Validator::make($request->all(), [
+
+            'mobile_own'=> 'required|string',
+            'name' => 'required|string',
+            'father_name' => 'required|string',
+            
+
+            'permanent_address_village'=> 'required|string',
+            'permanent_address_post_office'=> 'required|string',
+            'permanent_address_thana'=> 'required|string',
+            'permanent_address_district'=> 'required|string',
+            'permanent_address_division'=> 'required|string',
+            'temporary_address'=> 'required|string',
+
+            'email' => 'email|unique:users',
+            /*'password' => 'required|string|min:6|same:password_again',
+            'password_again'=>'required|string|min:6',
+            */
+            // 'custom_field' => 'required', // Add your custom field validation here
+            //'user_type' => 'required', // Add your custom field validation here
+        ]);
+
+        }    
+
+
+        if($user_type==4){
+
+            $validator = Validator::make($request->all(), [
+
+            'mobile_own'=> 'required|string',
+            'name' => 'required|string',
+            
+            /*'password' => 'required|string|min:6|same:password_again',
+            'password_again'=>'required|string|min:6',
+            */
+            // 'custom_field' => 'required', // Add your custom field validation here
+            //'user_type' => 'required', // Add your custom field validation here
+        ]);
+
+        }    
+
+
+        if($user_type==5){
+
+            $validator = Validator::make($request->all(), [
+
+                'mobile_own'=> 'required|string',
+                'name' => 'required|string',
+                'father_name'=> 'required|string',
+                'current_address' =>'required|string',
+
+                
+            /*    'password' => 'required|string|min:6|same:password_again',
+                'password_again'=>'required|string|min:6',
+            */
+            
+        ]);
+
+        }
+
+
+        if($user_type==6){
+
+                
+            $validator = Validator::make($request->all(), [
+
+                'mobile_own'=> 'required|string',
+                'name' => 'required|string',
+                'father_name' => 'required|string',
+                
+
+                'permanent_address_village'=> 'required|string',
+                'permanent_address_post_office'=> 'required|string',
+                'permanent_address_thana'=> 'required|string',
+                'permanent_address_district'=> 'required|string',
+                'permanent_address_division'=> 'required|string',
+                'temporary_address'=> 'required|string',
+
+                'email' => 'email|unique:users',
+                
+        ]);
+
+        }    
+
+
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        if($user_type==1){
+
+            $info=TeacherStaff::where(array('user_id'=>$user_id))->get();
+            if(count($info)>0){
+
+                $approved_found=$info[0]['approved'];
+
+                $message="";
+                if($approved_found==1){
+                    $message='অ্যাকাউন্ট ইতোমধ্যেই নিবন্ধিত এবং অ্যাডমিনের অনুমোদনের অপেক্ষায় আছে।';
+
+                }else{
+                    $message="অ্যাকাউন্ট ইতোমধ্যেই নিবন্ধিত এবং অ্যাডমিন কর্তৃক অনুমোদিত।";
+
+                }
+                return response()->json(['token' => $token,'already_exists'=>1,'message'=>$message], 200);
+
+
+            }
+
+
+            // Create the user
+        $user = TeacherStaff::create([
+            'user_id'=>$user_id,
+            'user_type'=>$user_type,
+            // 'mobile' => $request->input('mobile_own'),
+            'name' => $request->input('name'),
+            'father_name' => $request->input('father_name'),
+            'rank'=> $request->input('status'), 
+          
+            'whatsapp'=> $request->input('whatsapp'),
+            'permanent_address'=>$request->input('permanent_address'),
+            'temporary_address'=>$request->input('temporary_address'),
+            'email' => $request->input('email'),
+
+            'khidmat_year'=> $request->input('khidmat_year'),
+            'ex_or_current'=> $request->input('ex_or_current'),
+            'current_working_institution'=> $request->input('current_institution'),  
+            // 'password' => Hash::make($request->input('password')),
+            //'password_again'=>$request->input('password_again'),
+
+            
+          
+          
+          
           
 
-         
-        $first_name = $request->first_name;
-        $middle_name = $request->middle_name;
-        $last_name = $request->last_name;
-        $date_of_birth= $request->date_of_birth;
-        if(trim($date_of_birth)!==trim('')){
-                
-                $date_of_birth_array=explode('-', $date_of_birth);
-                $date_of_birth=$date_of_birth_array[2].'-'.$date_of_birth_array[1].'-'.$date_of_birth_array[0];
-        }
 
-        $passport_submission_date = $request->passport_submission_date;
+        ]);
 
-        if(trim($passport_submission_date)!=trim('')){
+        }    // end of $user_type==1
 
-            $passport_submission_date_array = explode('-', $passport_submission_date);
-            $passport_submission_date = $passport_submission_date_array[2].'-'.$passport_submission_date_array[1].'-'.$passport_submission_date[0];
+        if($user_type==2){
 
-        }
 
-        $medical_formalities_ok=$request->medical_formalities_ok;
-        $calling_visa_ok = $request->calling_visa_ok;
-        $flight_ok = $request->flight_ok;
-        $approach_mode = $request->approach_mode;
-        $agent_id = $request->agent;
-        $medical_condition=$request->medical_condition;
-        $company=trim($request->company);
+            $info=Fujala::where(array('user_id'=>$user_id))->get();
+            if(count($info)>0){
 
-        
-        $first_lang = $request->first_lang;
-        $countryOfCitizenship = $request->countryOfCitizenship;
-        $nationality = $request->nationality;
-        $passport_no = $request->passport_no;
-        $passport_expiry_date = $request->passport_expiry_date;
-        
-        if(trim($passport_expiry_date)!=trim('')){
-            $passport_expiry_date_array = explode('-',$passport_expiry_date);
-            $passport_expiry_date= $passport_expiry_date_array[2].'-'.$passport_expiry_date_array[1].'-'.$passport_expiry_date_array[0];
+                $approved_found=$info[0]['approved'];
 
-        }
+                $message="";
+                if($approved_found==1){
+                    $message='অ্যাকাউন্ট ইতোমধ্যেই নিবন্ধিত এবং অ্যাডমিনের অনুমোদনের অপেক্ষায় আছে।';
 
-        $nid_number = $request->nid_number;
-        $marital_status=$request->marital_status;
-
-        $gender = $request->gender;
-        $division = $request->division;
-        if(empty(trim($division))){
-            $division=0;
-
-        }
-        $district = $request->district;
-        if(empty($district)){
-            $district=0;
-
-        }
-        $thana= $request->thana;
-        if(empty(trim($thana))){
-            $thana=0;
-
-        }
-        $postal_code= $request->post_code;
-        $address= $request->address;
-        $city = $request->city;
-        $country = $request->country;
-        $state_province = $request->state_province;
-        $email = $request->email;
-        $zip = $request->zip;
-        $phone = $request->phone;
-        $organization_category = $request->organization_category;
-        $company = $request->company;
-        $medical_centre=$request->medical_centre;
-        $medical_date = $request->medical_date;
-        if(trim($medical_date)!=trim('')){
-
-            $medical_date_array = explode('-',$medical_date);
-            $medical_date=$medical_date_array[2].'-'.$medical_date_array[1].'-'.$medical_date_array[0];
-        }
-        
-        $job_designation = $request->job_designation;
-        $departure_date = $request->departure_date;
-        
-        if(trim($departure_date)!=trim('')){
-
-                $daparture_date_array =explode('-',$departure_date);
-                $departure_date=$daparture_date_array[2].'-'.$daparture_date_array[1].'-'.$daparture_date_array[0];
-        }
-        
-        $esd_to_reach = $request->esd_to_reach;
-        if(trim($esd_to_reach)!=trim('')){
-            
-            $esd_to_reach_array=explode('-',$esd_to_reach);
-            $esd_to_reach= $esd_to_reach_array[2].'-'.$esd_to_reach_array[1].'-'.$esd_to_reach_array[0];
-
-        }
-        
-
-
-
-
-        
-        $user = new User;
-        $user->first_name=trim($first_name);
-        $user->middle_name=trim($middle_name);
-        $user->last_name= trim($last_name);
-        if(!empty(trim($date_of_birth))){
-
-            $user->dob= trim($date_of_birth);
-        }
-
-
-
-
-        if(!empty(trim($passport_submission_date))){
-
-            $user->passport_submission_date = trim($passport_submission_date);
-
-        }
-
-
-        if($medical_formalities_ok){
-
-            $user->medical_ok = 1;
-
-        }else{
-
-            $user->medical_ok = 0;
-
-        }
-        if($calling_visa_ok){
-            
-            $user->calling_visa_ok=1;
-
-        }else{
-            $user->calling_visa_ok=0;
-
-        }
-
-        if($flight_ok){
-            $user->flight_ok = 1;
-
-        }else{
-
-
-            $user->flight_ok = 0;
-
-        }
-
-        if($agent_id){
-
-            $user->agent_id=$agent_id;
-        }
-
-
-        if(!empty($medical_condition)){
-
-            $user->medical_condition = $medical_condition;
-
-        }
-
-        if(!empty($approach_mode)){
-
-            $user->approach_mode = $approach_mode;
-
-        }
-
-        
-        
-        
-        $user->first_lang=trim($first_lang);
-        $user->country_of_citizenship= trim($countryOfCitizenship);
-        $user->nationality= trim($nationality);
-        $user->passport_num= trim($passport_no);
-
-        if(!empty(trim($passport_expiry_date))){
-
-                $user->passport_expiry_date= trim($passport_expiry_date);
-        }
-        
-        $user->nid_num = trim($nid_number);
-        
-
-
-
-        if(!empty($marital_status)){
-
-            $user->marital_status= trim($marital_status);
-
-        }
-
-        
-        $user->gender=trim($gender);
-        
-        $user->division_id = $division;
-        $user->district_id = $district;
-        $user->thana_id= $thana;
-        $user->postal_code= $postal_code;
-
-        $user->address = trim($address);
-        $user->city= trim($city);
-        $user->country= trim($country);
-        $user->state_province= trim($state_province);
-        $user->email= trim($email);
-        $user->zip = trim($zip);
-        $user->phone = trim($phone);
-        $user->organization_category= trim($organization_category);
-        $user->company= trim($company);
-        $user->medical_center= trim($medical_centre);
-        $user->job_designation = trim($job_designation);
-        $user->user_type=2;
-
-        if(!empty(trim($departure_date))){
-
-            $user->departure_date = trim($departure_date);
-
-        }
-        
-        if(!empty(trim($esd_to_reach))){
-            
-            $user->esd_to_reach= trim($esd_to_reach);
-        }
-        
-
-
-
-
-        if ($request->hasFile('passport_size_photo')) {
-
-            $file= $request->file('passport_size_photo');
-
-            $passport_size_photo_found=$user->passport_size_photo;
-
-            /*******************************/
-
-            if($passport_size_photo_found){
-
-                if(File::exists(public_path('uploads/passport_size_photo/'.$passport_size_photo_found))){
-
-                    File::delete(public_path('uploads/passport_size_photo/'.$passport_size_photo_found));
+                }else{
+                    $message="অ্যাকাউন্ট ইতোমধ্যেই নিবন্ধিত এবং অ্যাডমিন কর্তৃক অনুমোদিত।";
 
                 }
+                return response()->json(['token' => $token,'already_exists'=>1,'message'=>$message], 200);
 
-                
 
             }
 
-
-        
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
-
-
-            $destinationPath = public_path('/thumbnails/passport_size_photo');
-
-            $imgFile = Image::make($file->getRealPath());
+            $user = Fujala::create([
             
-            $imgFile->resize(200, 200, function ($constraint) {
-
-                $constraint->aspectRatio();
-
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/passport_size_photo');
-            
-
-
-            $file->move($destinationPath, $filenameNew);
-            $user->passport_size_photo=$filenameNew;
-
-
-
-
-        }
-
-
-
-        /*
-
-        if ($request->hasFile('nid_photo')) {
-
-            $file= $request->file('nid_photo');
-        
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
-
-
-            // echo 'nid filename new = '.$filenameNew;
-
-            $destinationPath = public_path('/thumbnails/nid_photo');
-            
-            
-            $imgFile = Image::make($file->getRealPath());
-            
-            $imgFile->resize(200, 200, function ($constraint) {
-
-                $constraint->aspectRatio();
-
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/nid_photo');
-            
-
-
-            $file->move($destinationPath, $filenameNew);
-            $user->nid_photo=$filenameNew;
-
-        }
-
-
-        if ($request->hasFile('passport_copy')) {
-
-            $file= $request->file('passport_copy');
-        
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
-
-
-            $destinationPath = public_path('/thumbnails/passport_copy');
-
-            $imgFile = Image::make($file->getRealPath());
-            
-            $imgFile->resize(200, 200, function ($constraint) {
-
-                $constraint->aspectRatio();
-
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/passport_copy');
-            
-
-
-            $file->move($destinationPath, $filenameNew);
-            $user->passport_copy=$filenameNew;
-
-        }
-
-        if ($request->hasFile('vaccine_photo')) {
-
-            $file= $request->file('vaccine_photo');
-        
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
-
-
-            $destinationPath = public_path('/thumbnails/medical_photo');
-
-
-
-            $imgFile = Image::make($file->getRealPath());
-            
-            $imgFile->resize(200, 200, function ($constraint) {
-
-                $constraint->aspectRatio();
-
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/medical_photo');
-            
-
-
-            $file->move($destinationPath, $filenameNew);
-            $user->vaccine_photo=$filenameNew;
-
-        }
-
-
-
-
-        if ($request->hasFile('calling_photo')) {
-
-            $file= $request->file('calling_photo');
-        
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
-
-
-            $destinationPath = public_path('/thumbnails/calling_photo');
-
-            $imgFile = Image::make($file->getRealPath());
-            
-            $imgFile->resize(200, 200, function ($constraint) {
-
-                $constraint->aspectRatio();
-
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/calling_photo');
-            
-
-
-            $file->move($destinationPath, $filenameNew);
-            $user->calling_photo=$filenameNew;
-
-        }
-
-
-
-        if ($request->hasFile('visa_stamping_photo')) {
-
-            $file= $request->file('visa_stamping_photo');
-        
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
-
-
-            $destinationPath = public_path('/thumbnails/visa_stamping_photo');
-
-            $imgFile = Image::make($file->getRealPath());
-            
-            $imgFile->resize(200, 200, function ($constraint) {
-
-                $constraint->aspectRatio();
-
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/visa_stamping_photo');
-            
-
-
-            $file->move($destinationPath, $filenameNew);
-            $user->visa_stamping_photo=$filenameNew;
-
-        }
-
-
-
-
-
-
-        if ($request->hasFile('flight_photo')) {
-
-            $file= $request->file('flight_photo');
-        
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
-
-
-            $destinationPath = public_path('/thumbnails/flight_photo');
-
-            $imgFile = Image::make($file->getRealPath());
-            
-            $imgFile->resize(200, 200, function ($constraint) {
-
-                $constraint->aspectRatio();
-
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/flight_photo');
-            
-
-
-            $file->move($destinationPath, $filenameNew);
-            $user->flight_photo=$filenameNew;
-
-        }
-
-
-        */
-
-
-
-        $user->added_by = Auth::user()->id;
-
-        DB::transaction(function() use ($user, $request){
-
-
+ 
+                'user_id'=> $user_id,    
+                'user_type'=>$user_type,
+                'name'=>$request->input('name'),
+                'father_name'=>$request->input('father_name'),
+                'dob' => $request->input('dob'),
+                'mobile_own'=>$request->input('mobile_own'),
+                'permanent_address_village'=>$request->input('permanent_address_village'),
+                'permanent_address_post_office'=>$request->input('permanent_address_post_office'),
+                'permanent_address_thana'=>$request->input('permanent_address_thana'),
+                'permanent_address_district'=>$request->input('permanent_address_district'),
+                'permanent_address_division'=>$request->input('permanent_address_division'),
+                'temporary_address'=>$request->input('temporary_address'),
+                'marital_status'=>$request->input('marital_status'),
+                'mashgala_workplaces'=>$request->input('mashgala_workplaces'),
+                'facebook_id'=>$request->input('facebook_id'),
+                'faragat_year_hijri'=>$request->input('faragat_year_hijri'),
+                'faragat_year_christian'=>$request->input('faragat_year_christian'),
+                'blood_group'=>$request->input('blood_group'),
+                'last_jamat_attended'=>$request->input('last_jamat_attended'),
+                'email'=>$request->input('email'),
+                'mobile_own'=>$request->input('mobile_own'),
+                'mobile_guardian'=>$request->input('mobile_guardian'),
+                'whatsapp'=>$request->input('whatsapp'),
+                'tasnif'=>$request->input('tasnif'),
+                'social_organizational_contribution' =>$request->input('social_organizational_contribution'),
                 
-                $user->save();
+     
+                 ]);   
+        }
 
-                $user_id_created= $user->id;
 
-                $user_id_length=strlen($user_id_created);
-                $code_last_part_length=2;
-                $first_part_code_length=7-$user_id_length-$code_last_part_length;    
-                $user_code=$this->random_numerical_string($first_part_code_length).$this->random_numerical_string($code_last_part_length).$user_id_created;
 
-                $user_found = User::find($user_id_created);
-                $user->user_code=$user_code;
+        if($user_type==3){
 
-                $user->save();
+
+            $info=Student::where(array('user_id'=>$user_id))->get();
+            if(count($info)>0){
+
+                $approved_found=$info[0]['approved'];
+
+                $message="";
+                if($approved_found==1){
+                    $message='অ্যাকাউন্ট ইতোমধ্যেই নিবন্ধিত এবং অ্যাডমিনের অনুমোদনের অপেক্ষায় আছে।';
+
+                }else{
+                    $message="অ্যাকাউন্ট ইতোমধ্যেই নিবন্ধিত এবং অ্যাডমিন কর্তৃক অনুমোদিত।";
+
+                }
+                return response()->json(['token' => $token,'already_exists'=>1,'message'=>$message], 200);
+
+
+            }
+
+            $user = Student::create([
+            
+ 
+                'user_id' => $user_id,    
+                'user_type'=>$user_type,
+                'name'=>$request->input('name'),
+                'father_name'=>$request->input('father_name'),
+                'dob' => $request->input('dob'),
+                'mobile_own'=>$request->input('mobile_own'),
+                'permanent_address_village'=>$request->input('permanent_address_village'),
+                'permanent_address_post_office'=>$request->input('permanent_address_post_office'),
+                'permanent_address_thana'=>$request->input('permanent_address_thana'),
+                'permanent_address_district'=>$request->input('permanent_address_district'),
+                'permanent_address_division'=>$request->input('permanent_address_division'),
+                'temporary_address'=>$request->input('temporary_address'),
+                'marital_status'=>$request->input('marital_status'),
+                'mashgala_workplaces'=>$request->input('mashgala_workplaces'),
+                'facebook_id'=>$request->input('facebook_id'),
+                'faragat_year_hijri'=>$request->input('faragat_year_hijri'),
+                'faragat_year_christian'=>$request->input('faragat_year_christian'),
+                'blood_group'=>$request->input('blood_group'),
+                'last_jamat_attended'=>$request->input('last_jamat_attended'),
+                'email'=>$request->input('email'),
+                'mobile_own'=>$request->input('mobile_own'),
+                'mobile_guardian'=>$request->input('mobile_guardian'),
+                'whatsapp'=>$request->input('whatsapp'),
+                'tasnif'=>$request->input('tasnif'),
+                'social_organizational_contribution' =>$request->input('social_organizational_contribution'),
+                // 'password' =>Hash::make($request->input('password')),
+     
+                 ]);   
+        }
+
+
+        if($user_type==4){
+
+
+            $info=Donor::where(array('user_id'=>$user_id))->get();
+            if(count($info)>0){
+
+                $approved_found=$info[0]['approved'];
+
+                $message="";
+                if($approved_found==1){
+                    $message='অ্যাকাউন্ট ইতোমধ্যেই নিবন্ধিত এবং অ্যাডমিনের অনুমোদনের অপেক্ষায় আছে।';
+
+                }else{
+                    $message="অ্যাকাউন্ট ইতোমধ্যেই নিবন্ধিত এবং অ্যাডমিন কর্তৃক অনুমোদিত।";
+
+                }
+                return response()->json(['token' => $token,'already_exists'=>1,'message'=>$message], 200);
+
+
+            }
+
+            $donation_amount=$request->input('amount');
+            if(empty($donation_amount)){
+
+                $donation_amount=0;
+
+            }
+            $donor_types = $request->input('donor_types');
+
+            for($i=0; $i<count($donor_types); $i++){
+
+                $donor_type_found = $donor_types[$i];
+
+
+
+                $user = Donor::create([
                 
+     
+                    'user_id' => $user_id,   
+                    'user_type'=>$user_type,
+                    'name'=>$request->input('name'),
+                    'profession'=>$request->input('occupation'),
+                    'current_working_institution'=>$request->input('current_working_institution'),
 
+                    // 'father_name'=>$request->input('father_name'),
+                    'mobile_own'=>$request->input('mobile_own'),
+                    
+                    
 
+                    'rank'=> $request->input('rank'),
+                    'temporary_address' =>$request->input('current_address'),
+                    'donor_type'=> $donor_type_found,
+                    'donation_type'=> $request->input('donation_types'),
+                    'donation_fields'=> $request->input('donation_fields'),
+                    'donation_amount'=>$donation_amount,
 
-                
-
-                $nid_doc_labels = json_decode($request->nid_doc_labels);
-                
-                if(!$nid_doc_labels){
-
-                    $nid_doc_labels=[];
-
-                }    
-
-
-                $nid_image_names = json_decode($request->nid_image_names);
-
-                if(!$nid_image_names){
-
-                    $nid_image_names=[];
-
-                }
-
-
-
-                $nid_pdf_names = json_decode($request->nid_pdf_names);
-
-                if(!$nid_pdf_names){
-
-                    $nid_pdf_names=[];
-
-                }
-
-
-
-                $passport_copy_labels = json_decode($request->passport_copy_labels);
-
-                if(!$passport_copy_labels){
-
-                    $passport_copy_labels=[];
-
-                }
-                $passport_copy_image_names = json_decode($request->passport_copy_image_names);
-                
-                if(!$passport_copy_image_names){
-
-                    $passport_copy_image_names=[];
-
-                }
-                $passport_copy_pdf_names = json_decode($request->passport_copy_pdf_names);
-
-                if(!$passport_copy_pdf_names){
-
-                    $passport_copy_pdf_names=[];
-
-                }
-
-
-
-                $medical_doc_labels = json_decode($request->medical_doc_labels);
-                if(!$medical_doc_labels){
-
-                    $medical_doc_labels=[];
-
-                }
-                $medical_image_names = json_decode($request->medical_image_names);
-
-                if(!$medical_image_names){
-                    $medical_image_names=[];
-
-                }
-                $medical_pdf_names = json_decode($request->medical_pdf_names);
-
-                if(!$medical_pdf_names){
-
-                    $medical_pdf_names=[];
-
-                }
-
-
-                $doc_info_all=array();
-
-
-                for($i=0; $i<count($nid_doc_labels); $i++){
-
-                     $doc_info=array();
-                     $doc_info['description']=$nid_doc_labels[$i];
-                     $pdf_doc = $nid_pdf_names[$i];
-                     $doc_info['pdf_doc'] =$pdf_doc;
-                     $doc_info['thumbnail']=$nid_image_names[$i];
-                     $doc_info['large_image']=$nid_image_names[$i];
-                     $doc_info['user_id']=$user_id_created;
-                     $doc_info['doc_category']=2; // 2=> nid from db column comment
-                     $doc_info['done_by']= Auth::user()->id;
-                     $doc_info['created_at']= Carbon::now();
-                     $doc_info['updated_at']= Carbon::now();
+                    // 'password'=> Hash::make($request->input('password'))
+                    
+         
+                     ]);   
                      
 
-                     $doc_info_all[]=$doc_info;
+            }//end of for loop
 
-                }// end of for loop
-
-
-
-                
-                
-                for($i=0; $i<count($passport_copy_labels); $i++){
-
-                     $doc_info=array();
-                     $doc_info['description']=$passport_copy_labels[$i];
-                     $pdf_doc = $passport_copy_pdf_names[$i];
-                     $doc_info['pdf_doc'] =$pdf_doc;
-                     $doc_info['thumbnail']=$passport_copy_image_names[$i];
-                     $doc_info['large_image']=$passport_copy_image_names[$i];
-                     $doc_info['user_id']=$user_id_created;
-                     $doc_info['doc_category']=6; // 6=> nid from db column comment
-                     $doc_info['done_by']= Auth::user()->id;
-                     $doc_info['created_at']= Carbon::now();
-                     $doc_info['updated_at']= Carbon::now();
-
-                     $doc_info_all[]=$doc_info;
-
-                }// end of for loop
-
-
-
-
-                
-                
-                for($i=0; $i<count($medical_doc_labels); $i++){
-
-                     $doc_info=array();
-                     $doc_info['description']=$medical_doc_labels[$i];
-                     $pdf_doc = $medical_pdf_names[$i];
-                     $doc_info['pdf_doc'] =$pdf_doc;
-                     $doc_info['thumbnail']=$medical_image_names[$i];
-                     $doc_info['large_image']=$medical_image_names[$i];
-                     $doc_info['user_id']=$user_id_created;
-                     $doc_info['doc_category']=5; // 6=> nid from db column comment
-                     $doc_info['done_by']= Auth::user()->id;
-                     $doc_info['created_at']= Carbon::now();
-                     $doc_info['updated_at']= Carbon::now();
-
-                     $doc_info_all[]=$doc_info;
-
-                }// end of for loop
-
-
-                Doc::insert($doc_info_all);
-
-
-
-        });// end of DB::transaction
-
-
-         return response()->json(['success'=>true],200);  
+            
         }
 
+
+
+
+        if($user_type==5){
+
+
+            $info=Volunteer::where(array('user_id'=>$user_id))->get();
+            if(count($info)>0){
+
+                $approved_found=$info[0]['approved'];
+
+                $message="";
+                if($approved_found==1){
+                    $message='অ্যাকাউন্ট ইতোমধ্যেই নিবন্ধিত এবং অ্যাডমিনের অনুমোদনের অপেক্ষায় আছে।';
+
+                }else{
+                    $message="অ্যাকাউন্ট ইতোমধ্যেই নিবন্ধিত এবং অ্যাডমিন কর্তৃক অনুমোদিত।";
+
+                }
+                return response()->json(['token' => $token,'already_exists'=>1,'message'=>$message], 200);
+
+
+            }
+            
+            $user = Volunteer::create([
+            
+ 
+                'user_id' => $user_id,   
+                'user_type'=>$user_type,
+                'name'=>$request->input('name'),
+                'father_name'=> $request->input('father_name'),
+
+                'temporary_address'=> $request->input('current_address'),   
+                'profession'=>$request->input('profession'),
+                'current_working_institution'=>$request->input('current_working_institution'),
+
+                
+                'mobile_own'=>$request->input('mobile_own'),
+                'email'=> $request->input('email'),
+                'whatsapp'=> $request->input('whatsapp'),
+                'age'=> $request->input('age'),
+                'educational_institution'=> $request->input('educational_institution'),
+                'current_working_institution'=> $request->input('current_working_institution'),
+                'skill_experience'=> $request->input('skill_experience'),
+
+                // 'password'=> Hash::make($request->input('password'))
+                
+     
+                 ]);   
+        }
+
+
+        if($user_type==6){
+
+
+            $info=Student::where(array('user_id'=>$user_id))->get();
+            if(count($info)>0){
+
+                $approved_found=$info[0]['approved'];
+
+                $message="";
+                if($approved_found==1){
+                    $message='অ্যাকাউন্ট ইতোমধ্যেই নিবন্ধিত এবং অ্যাডমিনের অনুমোদনের অপেক্ষায় আছে।';
+
+                }else{
+                    $message="অ্যাকাউন্ট ইতোমধ্যেই নিবন্ধিত এবং অ্যাডমিন কর্তৃক অনুমোদিত।";
+
+                }
+                return response()->json(['token' => $token,'already_exists'=>1,'message'=>$message], 200);
+
+
+            }
+            
+            $user = Student::create([
+            
+ 
+                'user_id' => $user_id,    
+                'user_type'=>$user_type,
+                'name'=>$request->input('name'),
+                'father_name'=>$request->input('father_name'),
+                'dob' => $request->input('dob'),
+                'mobile_own'=>$request->input('mobile_own'),
+                'permanent_address_village'=>$request->input('permanent_address_village'),
+                'permanent_address_post_office'=>$request->input('permanent_address_post_office'),
+                'permanent_address_thana'=>$request->input('permanent_address_thana'),
+                'permanent_address_district'=>$request->input('permanent_address_district'),
+                'permanent_address_division'=>$request->input('permanent_address_division'),
+                'temporary_address'=>$request->input('temporary_address'),
+                // 'marital_status'=>$request->input('marital_status'),
+                // 'mashgala_workplaces'=>$request->input('mashgala_workplaces'),
+                'facebook_id'=>$request->input('facebook_id'),
+                // 'faragat_year_hijri'=>$request->input('faragat_year_hijri'),
+                // 'faragat_year_christian'=>$request->input('faragat_year_christian'),
+                'blood_group'=>$request->input('blood_group'),
+                // 'last_jamat_attended'=>$request->input('last_jamat_attended'),
+                'current_class'=>$request->input('current_class'),
+                'email'=>$request->input('email'),
+                'mobile_own'=>$request->input('mobile_own'),
+                'mobile_guardian'=>$request->input('mobile_guardian'),
+                'whatsapp'=>$request->input('whatsapp'),
+                'student_type'=> '1'
+                // 'tasnif'=>$request->input('tasnif'),
+                // 'social_organizational_contribution' =>$request->input('social_organizational_contribution'),
+                // 'password' =>Hash::make($request->input('password')),
+     
+                 ]);   
+
+            // var_dump($user);
+
+
+        }
+
+
+        
+
+        // You can also generate a token for the user if needed
+       // $token = $user->createToken('AnNoor')->accessToken;
+
+        return response()->json(['token' => $token,'already_exists'=>0], 200);
+
+        // return response()->json([], 200);
     }
 
 
-    /**
-     * 
-     * generate a random numerical string of the given length
-     *
-     * 
-     * @param  int  $id
-     * @return string of the given length 
-     * 
-     */
-    function random_numerical_string($length) {
 
-            $key = '';
-            $keys = array_merge(range(0, 9), range(0,9));
-
-            for ($i = 0; $i < $length; $i++) {
-                $key .= $keys[array_rand($keys)];
-            }
-
-            return $key;
-
-    }// end of function random_string
-
-
-    /**
-     * 
-     * generate a random string of the given length
-     *
-     * 
-     * @param  int  $id
-     * @return string of the given length 
-     * 
-     */
-    function random_string($length) {
-
-            $key = '';
-            $keys = array_merge(range(0, 9), range('a', 'z'));
-
-            for ($i = 0; $i < $length; $i++) {
-                $key .= $keys[array_rand($keys)];
-            }
-
-            return $key;
-
-    }// end of function random_string
-
-
-    /**
-     * 
-     * Delete uploaded doc 
-     * Upload any doc from  the add user page
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response 
-     * 
-     */
-
-    public function doc_delete_now(Request $request){
-
-            $pdf_doc=$request->pdf_doc; 
-            $large_image=$request->large_image;
-
-            $thumbnail_image=$request->thumbnail_image;
-
-            if($pdf_doc!=null){
-/*
-                $padf_full_path= URL::to('/assets/');
-
-                File::delete();*/
-
-            }
-            
-
-            return Response::json([
-
-              'success' =>true,
-              'thumbnail_image'=>$thumbnail_image,
-              'large_image'=> $large_image,
-              'pdf_doc' => $pdf_doc,
-              'description' => $description
-              
-            ]);
-
-
-                    
-
-    }// end of function doc_delete_now
-
-    /**
-     * 
-     * Upload any doc from  the add user page
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response 
-     * 
-     */
-
-
-    public function doc_upload_now(Request $request){
-
-        $description=""; 
-        $doc_type=0;
-        if($request->description){
-
-            $description=$request->description;
-
-        }
+    public function get_registered_categories(Request $request, $userId){
 
         
 
-        if($request->doc_type){
 
-            $doc_type=trim($request->doc_type);
+        $all_categories=[];
 
+        $teacher_staff_info=TeacherStaff::where(array('user_id'=>$userId))->get();
+        if(count($teacher_staff_info)>0){
+
+            $all_categories['teacher_staff']=1;
+
+        }else{
+            $all_categories['teacher_staff']=0;
         }
 
-        // echo " doc_type = ".$request->doc_type;
+
+        $fujala_info=Fujala::where(array('user_id'=>$userId))->get();
+
+        if(count($fujala_info)>0){
+
+            $all_categories['fujala']=1;
+
+
+        }else{
+
+            $all_categories['fujala']=0;
+        }
 
 
 
-        if ($request->hasFile('files')) {
+        $student_info=Student::where(array('user_id'=>$userId))->get();
 
-            $file= $request->file('files');
+        if(count($student_info)>0){
+
+            $all_categories['student']=1;
+
+
+        }else{
+
+            $all_categories['student']=0;
+        }
+
+
+        $donor_info=Donor::where(array('user_id'=>$userId))->get();
+
+        if(count($donor_info)>0){
+
+            $all_categories['donor']=1;
+
+
+        }else{
+
+            $all_categories['donor']=0;
+        }
+
+        $volunteer_info=Volunteer::where(array('user_id'=>$userId))->get();
+
+        if(count($volunteer_info)>0){
+
+            $all_categories['volunteer']=1;
+
+
+        }else{
+
+            $all_categories['volunteer']=0;
+        }
+
+        $all_categories_all=[];
+        $all_categories_obtained=[];
+        $all_categories_obtained[]=$all_categories;
+        $all_categories_all['categories']=$all_categories_obtained;
+
+
+        return response()->json($all_categories_all);
+
+    }//end of function get_registered_categories
+
+
+
+    public function getTeachersAndStaff(Request $request){
+/**/
+
+
+        /*$users=User
+        // ::all();
+        ::where(array('user_type'=>'1'))
+        ->get();*/
+
+        $users = TeacherStaff::get();
+
         
-            // $destinationPath = 'uploads/';
-            //$filenameNew = time().'.'.$file->getClientOriginalName();
-            $filenameNew= $this->random_string(50).'.'.$file->extension();
-            //Input::file('image')->move($destinationPath, $filename);
+        return view('teachersAndStaff', compact('users'));
 
+    }// end of function getTeachersAndStaff
 
+    public function getTeachersAndStaffDataTable(Request $request){
 
-            if($doc_type==trim("nid_photo")){
+/*        $users = User::where(array('user_type'=>'1'))
+        ->get();
+*/
 
-                $destinationPath = public_path('/thumbnails/nid_photo');    
+        $users = TeacherStaff::get();
 
-            }elseif($doc_type==trim("passport_size_photo")){
+        return Datatables::of($users)
+        ->addIndexColumn()
+         ->addColumn('intro', function($userIndiv){
 
-                $destinationPath = public_path('/thumbnails/passport_size_photo');
+            $approval_text='';
 
-            }elseif($doc_type==trim("medical_photo")){
+            if($userIndiv->approved==1){
 
-                $destinationPath = public_path('/thumbnails/medical_photo');
+                $approval_text='Disapprove';
 
-            }elseif($doc_type==trim("calling_photo")){
+            }else if($userIndiv->approved==0){
 
-                $destinationPath = public_path('/thumbnails/calling_photo');
-
-            }elseif($doc_type==trim("flight_photo")){
-
-                $destinationPath = public_path('/thumbnails/flight_photo');    
-
-            }elseif($doc_type==trim("passport_copy")){
-
-                $destinationPath = public_path('/thumbnails/passport_copy');
-
-            }elseif($doc_type==trim("visa_stamping_photo")){
-
-                $destinationPath = public_path('/thumbnails/visa_stamping_photo');
-
-            }elseif($doc_type==trim("working_selection")){
-
-                $destinationPath = public_path('/thumbnails/working_selection');
-            }    
-
-
-            $allowedMimeTypes = ['image/jpeg','image/gif','image/png','image/jpg','image/bmp']; // 'image/jpeg',image/bmp, added by me later. Is that really necessary ?
-            
-            $contentType = $file->getClientMimeType();
-            $is_image=0;
-            if(in_array($contentType, $allowedMimeTypes) ){
-
-              $is_image=1;
+                $approval_text='Approve';
             }
 
-            $is_pdf=0;
+            return '<span class="approve_or_disapprove" data-id="'.$userIndiv->id.'" data-approved="'.$userIndiv->approved.'">'.$approval_text.'</span>';
+         })
 
-            if($contentType==trim('application/pdf')){
+         ->rawColumns(['intro'])
+         ->toJson();
+         // ->make(true);
 
-                $is_pdf=1;
+    }// end of function getTeachersAndStaffDataTable
 
+    public function getFujala(Request $request){
+
+        /*$users=User
+        // ::all();
+        ::where(array('user_type'=>'2'))
+        ->get();*/
+
+        $users = Fujala::get();
+
+        
+        return view('fujala', compact('users'));
+
+
+
+    }//end of function getFujala 
+
+    public function getVolunteers(Request $request){
+
+        /*$users=User
+        // ::all();
+        ::where(array('user_type'=>'5'))
+        ->get();*/
+
+        $users = Volunteer::get();
+
+        
+        return view('volunteers', compact('users'));
+
+
+
+    }//end of function getVolunteers 
+
+
+    
+
+    public function getStudents(Request $request){
+
+        /*$users=User
+        // ::all();
+        ::where(array('user_type'=>'3'))
+        ->get();*/
+
+        $users= Student::get();
+
+        
+        return view('students', compact('users'));
+
+
+
+    }//end of function getStudents 
+
+
+
+public function getDonors(Request $request){
+
+        /*$users=User
+        // ::all();
+        ::where(array('user_type'=>'4'))
+        ->get();*/
+
+        $users = Donor::get();
+
+        // echo " donor name = ".$users[0]->name;
+
+        //echo " total donors = ".count($users);
+
+        
+        return view('donors', compact('users'));
+
+
+
+    }//end of function getDonors 
+    
+
+    
+
+    public function getFujalaDataTable(Request $request){
+
+        
+
+        /*$users = User::where(array('user_type'=>'2'))
+        ->get();*/
+
+        $users = Fujala::get();
+
+        $mashgala_work_fields=['শাইখুল হাদিস','মুহাদ্দিস','মুহতামিম','ইমাম'];
+
+        return Datatables::of($users)
+
+        ->addIndexColumn()
+
+
+         ->addColumn('permanent_address_found', function($userIndiv){
+
+            $permanent_address_found=' Village: '.$userIndiv->permanent_address_village .', Post Office:'. $userIndiv->permanent_address_post_office.', Thana: '.$userIndiv->permanent_address_thana .', District: '.$userIndiv->permanent_address_district.', Division: '.$userIndiv->permanent_address_division ;
+
+
+            return $permanent_address_found;
+         })
+
+         ->addColumn('mashgala_work_fields_found', function($userIndiv) use ($mashgala_work_fields){
+
+            $mashgala_db = $userIndiv->mashgala_workplaces ;
+            $mashgala_array=explode(',', $mashgala_db);
+
+            $mashgala_found="";
+
+            for($i=0; $i<count($mashgala_array); $i++){
+
+                $mashgala_field_index=$mashgala_array[$i];
+
+                $mashgala_found.=$mashgala_work_fields[$mashgala_field_index];
+
+                
+
+                if($i < count($mashgala_array)-1){
+
+                    $mashgala_found.=",";
+
+                }
+
+            }// end of for loop
+
+
+            return $mashgala_found;
+         })
+         
+
+
+         ->addColumn('faragat_year_found', function($userIndiv){
+
+            $permanent_address_found=' Hijri : '.$userIndiv->faragat_year_hijri .', Christian:'. 
+            $userIndiv->faragat_year_christian  ;
+
+
+            return $permanent_address_found;
+         })
+
+         
+
+         ->addColumn('intro', function($userIndiv){
+
+            $approval_text='';
+
+            if($userIndiv->approved==1){
+
+                $approval_text='Disapprove';
+
+            }else if($userIndiv->approved==0){
+
+                $approval_text='Approve';
             }
 
-            
+            return '<span class="approve_or_disapprove" data-id="'.$userIndiv->id.'" data-approved="'.$userIndiv->approved.'">'.$approval_text.'</span>';
+         })
 
-            
+         ->rawColumns(['intro','permanent_address_found'])
+         ->toJson();
+         // ->make(true);            
 
-            
-            
+    }// end of function getFujalaDataTable
 
-            $thumbnail_image=null;
-            if($is_image){
 
-                $imgFile = Image::make($file->getRealPath());
 
-                $imgFile->resize(200, 200, function ($constraint) {
+public function getDonorsDataTable(Request $request){
 
-                    $constraint->aspectRatio();
+        
 
-                })->save($destinationPath.'/'.$filenameNew);
 
-                $thumbnail_image= $filenameNew;
+        /*$users = User::where(array('user_type'=>'4'))
+        ->get();*/
 
+        $users = Donor::get();
+
+        $mashgala_work_fields=['শাইখুল হাদিস','মুহাদ্দিস','মুহতামিম','ইমাম'];
+
+        return Datatables::of($users)
+
+        ->addIndexColumn()
+
+
+         ->addColumn('permanent_address_found', function($userIndiv){
+
+            $permanent_address_found=' Village: '.$userIndiv->permanent_address_village .', Post Office:'. $userIndiv->permanent_address_post_office.', Thana: '.$userIndiv->permanent_address_thana .', District: '.$userIndiv->permanent_address_district.', Division: '.$userIndiv->permanent_address_division ;
+
+
+            return $permanent_address_found;
+         })
+
+         ->addColumn('mashgala_work_fields_found', function($userIndiv) use ($mashgala_work_fields){
+
+            $mashgala_db = $userIndiv->mashgala_workplaces ;
+            $mashgala_array=explode(',', $mashgala_db);
+
+            $mashgala_found="";
+
+            for($i=0; $i<count($mashgala_array); $i++){
+
+                $mashgala_found.=$mashgala_work_fields[$i];
+
+                if($i < count($mashgala_array)-1){
+
+                    $mashgala_found.=",";
+
+                }
+
+            }// end of for loop
+
+
+            return $mashgala_found;
+         })
+         
+
+
+         ->addColumn('faragat_year_found', function($userIndiv){
+
+            $permanent_address_found=' Hijri : '.$userIndiv->faragat_year_hijri .', Christian:'. 
+            $userIndiv->faragat_year_christian  ;
+
+
+            return $permanent_address_found;
+         })
+
+         
+
+         ->addColumn('intro', function($userIndiv){
+
+            $approval_text='';
+
+            if($userIndiv->approved==1){
+
+                $approval_text='Disapprove';
+
+            }else if($userIndiv->approved==0){
+
+                $approval_text='Approve';
             }
 
+            return '<span class="approve_or_disapprove" data-id="'.$userIndiv->id.'" data-approved="'.$userIndiv->approved.'">'.$approval_text.'</span>';
+         })
+
+         ->rawColumns(['intro','permanent_address_found'])
+         // ->toJson()
+         ->make(true);       
+         }// end of function getDonorsDataTable    
+
+    public function getStudentsDataTable(Request $request){
+
+        
+
+        /*$users = User::where(array('user_type'=>'3'))
+        ->get();*/
+
+        $users = Student::get();
+
+        $mashgala_work_fields=['শাইখুল হাদিস','মুহাদ্দিস','মুহতামিম','ইমাম'];
+
+        return Datatables::of($users)
+
+        ->addIndexColumn()
 
 
-            $doc_category=0;
+         ->addColumn('permanent_address_found', function($userIndiv){
 
-            
+            $permanent_address_found=' Village: '.$userIndiv->permanent_address_village .', Post Office:'. $userIndiv->permanent_address_post_office.', Thana: '.$userIndiv->permanent_address_thana .', District: '.$userIndiv->permanent_address_district.', Division: '.$userIndiv->permanent_address_division ;
 
-            if($doc_type==trim("passport_size_photo")){
 
-                $doc_category=1;
+            return $permanent_address_found;
+         })
 
-                $destinationPath = public_path('/uploads/passport_size_photo');
+         ->addColumn('mashgala_work_fields_found', function($userIndiv) use ($mashgala_work_fields){
 
-            }
-            elseif($doc_type==trim("nid_photo")){
-
-                $doc_category=2;
-
-                $destinationPath = public_path('/uploads/nid_photo');    
-
-            }elseif($doc_type==trim("calling_photo")){
-
-                $doc_category=3;
-
-                $destinationPath = public_path('/uploads/calling_photo');
-
-            }elseif($doc_type==trim("flight_photo")){
-
-                $doc_category=4;
-
-                $destinationPath = public_path('/uploads/flight_photo');    
-
-            }elseif($doc_type==trim("medical_photo")){
-
-                $doc_category=5;
-
-                $destinationPath = public_path('/uploads/medical_photo');
-
-            }elseif($doc_type==trim("passport_copy")){
-
-                $doc_category=6;
-
-                $destinationPath = public_path('/uploads/passport_copy');
-
-            }elseif($doc_type==trim("visa_stamping_photo")){
-
-                $doc_category=7;
-
-                $destinationPath = public_path('/uploads/visa_stamping_photo');
-
-            }elseif($doc_type==trim("working_selection")){
-
-                $doc_category=8;
-
-                $destinationPath = public_path('/uploads/working_selection');
-            }
-            
-            
-            
-
-            $file->move($destinationPath, $filenameNew);
-
-            $pdf_doc=$large_image=null;
-
-            if(!$is_image){
-
-                $pdf_doc= $filenameNew;
+            $mashgala_db = $userIndiv->mashgala_workplaces ;
+            if($mashgala_db==null){
+                $mashgala_array=[];
 
             }else{
 
-                $large_image=$filenameNew;
+            
+            $mashgala_array=explode(',', $mashgala_db);
 
+           }
+
+            $mashgala_found="";
+
+            for($i=0; $i<count($mashgala_array); $i++){
+
+                $mashgala_field_index=$mashgala_array[$i];
+
+                $mashgala_found.=$mashgala_work_fields[$mashgala_field_index];
+
+                if($i < count($mashgala_array)-1){
+
+                    $mashgala_found.=",";
+
+                }
+
+            }// end of for loop
+
+
+            return $mashgala_found;
+         })
+         
+
+
+         ->addColumn('faragat_year_found', function($userIndiv){
+
+            $permanent_address_found=' Hijri : '.$userIndiv->faragat_year_hijri .', Christian:'. 
+            $userIndiv->faragat_year_christian  ;
+
+
+            return $permanent_address_found;
+         })
+
+         
+
+         ->addColumn('intro', function($userIndiv){
+
+            $approval_text='';
+
+            if($userIndiv->approved==1){
+
+                $approval_text='Disapprove';
+
+            }else if($userIndiv->approved==0){
+
+                $approval_text='Approve';
             }
-            
 
-            return Response::json([
+            return '<span class="approve_or_disapprove" data-id="'.$userIndiv->id.'" data-approved="'.$userIndiv->approved.'">'.$approval_text.'</span>';
+         })
 
-              'success' =>true,
-              'thumbnail_image'=>$thumbnail_image,
-              'large_image'=> $large_image,
-              'pdf_doc' => $pdf_doc,
-              'description' => $description
-              
-            ]);
+         ->rawColumns(['intro','permanent_address_found'])
+         ->toJson();
+         // ->make(true);            
+
+    }// end of function getStudentsDataTable
 
 
-        }            
+    public function getVolunteersDataTable(Request $request){
 
-    }// end of funvtion doc_upload_now
+    /*$users = User::where(array('user_type'=>'5'))
+        ->get();*/
 
-    public function doc_upload_now_0000(Request $request){
+        $users= Volunteer::get();
+
+        $mashgala_work_fields=['শাইখুল হাদিস','মুহাদ্দিস','মুহতামিম','ইমাম'];
+
+        return Datatables::of($users)
+        ->addIndexColumn()
+
+
+         ->addColumn('permanent_address_found', function($userIndiv){
+
+            $permanent_address_found=' Village: '.$userIndiv->permanent_address_village .', Post Office:'. $userIndiv->permanent_address_post_office.', Thana: '.$userIndiv->permanent_address_thana .', District: '.$userIndiv->permanent_address_district.', Division: '.$userIndiv->permanent_address_division ;
+
+
+            return $permanent_address_found;
+         })
+
+         ->addColumn('mashgala_work_fields_found', function($userIndiv) use ($mashgala_work_fields){
+
+            $mashgala_db = $userIndiv->mashgala_workplaces ;
+            $mashgala_array=explode(',', $mashgala_db);
+
+            $mashgala_found="";
+
+            for($i=0; $i<count($mashgala_array); $i++){
+
+                $mashgala_found.=$mashgala_work_fields[$i];
+
+                if($i < count($mashgala_array)-1){
+
+                    $mashgala_found.=",";
+
+                }
+
+            }// end of for loop
+
+
+            return $mashgala_found;
+         })
+         
+
+
+         ->addColumn('faragat_year_found', function($userIndiv){
+
+            $permanent_address_found=' Hijri : '.$userIndiv->faragat_year_hijri .', Christian:'. 
+            $userIndiv->faragat_year_christian  ;
+
+
+            return $permanent_address_found;
+         })
+
+         
+
+         ->addColumn('intro', function($userIndiv){
+
+            $approval_text='';
+
+            if($userIndiv->approved==1){
+
+                $approval_text='Disapprove';
+
+            }else if($userIndiv->approved==0){
+
+                $approval_text='Approve';
+            }
+
+            return '<span class="approve_or_disapprove" data-id="'.$userIndiv->id.'" data-approved="'.$userIndiv->approved.'">'.$approval_text.'</span>';
+         })
+
+         ->rawColumns(['intro','permanent_address_found'])
+         ->toJson();
+         // ->make(true);            
+
+
+    }// end of function getVolunteersDataTable
+
+    public function getInfo(Request $request, $user_type,$user_id){
 
 
 
-        if ($request->hasFile('passport_size_photo')) {
 
-            $file= $request->file('passport_size_photo');
         
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
+        $user_info=[];
 
+        if($user_type==1){
 
-            $destinationPath = public_path('/thumbnails/passport_size_photo');
+            $user_info=TeacherStaff::where(array('user_id'=>$user_id,'approved'=>'1'))->get();
 
-            $imgFile = Image::make($file->getRealPath());
-            
-            $imgFile->resize(200, 200, function ($constraint) {
+        }elseif($user_type==2){
 
-                $constraint->aspectRatio();
+            $user_info=Fujala::where(array('user_id'=>$user_id,'approved'=>'1'))->get();            
 
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/passport_size_photo');
-            
+        }elseif($user_type==3){
 
+            $user_info=Student::where(array('user_id'=>$user_id,'approved'=>'1'))->get();            
 
-            $file->move($destinationPath, $filenameNew);
-            $user->passport_size_photo=$filenameNew;
+        }elseif($user_type==4){
+
+            $user_info=Donor::where(array('user_id'=>$user_id,'approved'=>'1'))->get();            
+
+        }elseif($user_type==5){
+
+            $user_info=Volunteer::where(array('user_id'=>$user_id,'approved'=>'1'))->get();            
 
         }
 
+        // return json_encode($user_info);
 
-        if ($request->hasFile('nid_photo')) {
+        return response()->json($user_info);
 
-            $file= $request->file('nid_photo');
+
+
+
+    }// end of function getInfo
+
+
+
+    public function updateUser(Request $request){
+
+
+        $user_type=$request->input('user_type');
+        $user_id=$request->input('user_id');
+        $token=rand(0,99999999999);
+
+        if($user_type==1){
+
         
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
+        
+        $validator = Validator::make($request->all(), [
 
-
-            // echo 'nid filename new = '.$filenameNew;
-
-            $destinationPath = public_path('/thumbnails/nid_photo');
+            'user_type' => 'required', 
+            // 'mobile_own'=> 'required|string|unique:users',
+            'name' => 'required|string',
+            'father_name' => 'required|string',
+            // 'dob'=> 'required|string',
+            'permanent_address'=>'required|string',
+            'temporary_address'=>'required|string',
+            'email' => 'required|email|unique:users',
+            // 'password' => 'required|string|min:6|same:password_again',
+            // 'password_again'=>'required|string|min:6',
             
             
-            $imgFile = Image::make($file->getRealPath());
-            
-            $imgFile->resize(200, 200, function ($constraint) {
+        ]);
 
-                $constraint->aspectRatio();
-
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/nid_photo');
-            
-
-
-            $file->move($destinationPath, $filenameNew);
-            $user->nid_photo=$filenameNew;
-
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
         }
 
+        }// end of if($user_type==1){
 
-        if ($request->hasFile('passport_copy')) {
+        if($user_type==2){
 
-            $file= $request->file('passport_copy');
-        
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
+            $validator = Validator::make($request->all(), [
 
-
-            $destinationPath = public_path('/thumbnails/passport_copy');
-
-            $imgFile = Image::make($file->getRealPath());
-            
-            $imgFile->resize(200, 200, function ($constraint) {
-
-                $constraint->aspectRatio();
-
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/passport_copy');
+            // 'mobile_own'=> 'required|string|unique:users',
+            'name' => 'required|string',
+            'father_name' => 'required|string',
             
 
+            'permanent_address_village'=> 'required|string',
+            'permanent_address_post_office'=> 'required|string',
+            'permanent_address_thana'=> 'required|string',
+            'permanent_address_district'=> 'required|string',
+            'permanent_address_division'=> 'required|string',
+            'temporary_address'=> 'required|string',
 
-            $file->move($destinationPath, $filenameNew);
-            $user->passport_copy=$filenameNew;
+            // 'email' => 'email|unique:users',
+            // 'password' => 'required|string|min:6|same:password_again',
+            // 'password_again'=>'required|string|min:6',
+            
+            // 'custom_field' => 'required', // Add your custom field validation here
+            //'user_type' => 'required', // Add your custom field validation here
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
         }
 
-        if ($request->hasFile('vaccine_photo')) {
-
-            $file= $request->file('vaccine_photo');
-        
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
-
-
-            $destinationPath = public_path('/thumbnails/medical_photo');
+        }    
 
 
 
-            $imgFile = Image::make($file->getRealPath());
-            
-            $imgFile->resize(200, 200, function ($constraint) {
+        if($user_type==3){
 
-                $constraint->aspectRatio();
+            $validator = Validator::make($request->all(), [
 
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/medical_photo');
+            'mobile_own'=> 'required|string|unique:users',
+            'name' => 'required|string',
+            'father_name' => 'required|string',
             
 
+            'permanent_address_village'=> 'required|string',
+            'permanent_address_post_office'=> 'required|string',
+            'permanent_address_thana'=> 'required|string',
+            'permanent_address_district'=> 'required|string',
+            'permanent_address_division'=> 'required|string',
+            'temporary_address'=> 'required|string',
 
-            $file->move($destinationPath, $filenameNew);
-            $user->vaccine_photo=$filenameNew;
-
-        }
-
-
-
-
-        if ($request->hasFile('calling_photo')) {
-
-            $file= $request->file('calling_photo');
-        
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
-
-
-            $destinationPath = public_path('/thumbnails/calling_photo');
-
-            $imgFile = Image::make($file->getRealPath());
+            'email' => 'email|unique:users',
             
-            $imgFile->resize(200, 200, function ($constraint) {
-
-                $constraint->aspectRatio();
-
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/calling_photo');
-            
-
-
-            $file->move($destinationPath, $filenameNew);
-            $user->calling_photo=$filenameNew;
-
-        }
-
-
-
-        if ($request->hasFile('visa_stamping_photo')) {
-
-            $file= $request->file('visa_stamping_photo');
-        
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
-
-
-            $destinationPath = public_path('/thumbnails/visa_stamping_photo');
-
-            $imgFile = Image::make($file->getRealPath());
-            
-            $imgFile->resize(200, 200, function ($constraint) {
-
-                $constraint->aspectRatio();
-
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/visa_stamping_photo');
-            
-
-
-            $file->move($destinationPath, $filenameNew);
-            $user->visa_stamping_photo=$filenameNew;
-
-        }
-
-
-
-
-
-
-        if ($request->hasFile('flight_photo')) {
-
-            $file= $request->file('flight_photo');
-        
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
-
-
-            $destinationPath = public_path('/thumbnails/flight_photo');
-
-            $imgFile = Image::make($file->getRealPath());
-            
-            $imgFile->resize(200, 200, function ($constraint) {
-
-                $constraint->aspectRatio();
-
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/flight_photo');
-            
-
-
-            $file->move($destinationPath, $filenameNew);
-            $user->flight_photo=$filenameNew;
-
-        }
-
-
-
-    }// end of function doc_upload_now_0000
-     
-
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        $user=User::findOr($id, function(){
-
-              return 'Wrong place to explore!';
-
-        });
-
-        $countries=Country::get(); 
-
-        $divisions=Division::get();
-
-        $docs_all=Doc::where(['user_id'=>$id])->get();
-
-        $companies = Company::get();
-        return view('content.tables.user-edit', compact('user', 'docs_all','divisions','countries','companies'));  
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request)
-    {
-
-             $id=$request->user_id;           
-             $rules=array(
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'date_of_birth'=> 'required',
-            /*
-            'first_lang'=> 'required',
-            'countryOfCitizenship'=> 'required',*/
-            'passport_no'=> ['required','unique:users,passport_num,'.$id,'min:3'],
-            /*
-            'passport_expiry_date'=> 'required',
-            'nid_number'=> 'required',
+            /*'password' => 'required|string|min:6|same:password_again',
+            'password_again'=>'required|string|min:6',
             */
-            // 'marital_status'=> 'required',
-            'gender'=> 'required',
-            /*
-            'address'=> 'required',
-            'city'=> 'required',
-            'country'=> 'required',
-            'state_province'=> 'required',
-            'zip'=> 'required',*/
-             'email'=> ['unique:users,email,'.$id],
-            // 'phone'=> 'required'
+            // 'custom_field' => 'required', // Add your custom field validation here
+            //'user_type' => 'required', // Add your custom field validation here
+        ]);
+
+        }    
+
+
+
+
+        if($user_type==4){
+
+            $validator = Validator::make($request->all(), [
+
+            // 'mobile_own'=> 'required|string|unique:users',
+            'name' => 'required|string',
             
-          );
+            'temporary_address'=> 'required|string',
 
-        $validator = \Validator::make($request->all(), $rules);
-        
-        if ($validator->fails())
-        {
-            //return response()->json(['errors'=>$validator->errors()->all()]);
-
-           return Response::json(array(
-                                        'success' => false,
-                                        'errors' => $validator->getMessageBag()->toArray()
-
-                                      ), 400); // 400 being the HTTP code for an invalid request.
-        }else{
-
-        $id=$request->user_id;   
-        $user = User::find($id);
+            // 'email' => 'email|unique:users',
+            // 'password' => 'required|string|min:6|same:password_again',
+            // 'password_again'=>'required|string|min:6',
             
-         
-        $first_name = $request->first_name;
-        $middle_name = $request->middle_name;
-        $last_name = $request->last_name;
-        $date_of_birth= $request->date_of_birth;
-    
-        if(trim($date_of_birth)!==trim('')){
+            // 'custom_field' => 'required', // Add your custom field validation here
+            //'user_type' => 'required', // Add your custom field validation here
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        } 
+
+
+         if($user_type==5){
+
+            $validator = Validator::make($request->all(), [
+
+                'mobile_own'=> 'required|string|unique:users',
+                'name' => 'required|string',
+                'father_name'=> 'required|string',
+                'current_address' =>'required|string',
+
                 
-                $date_of_birth_array=explode('-', $date_of_birth);
-                
-                $date_of_birth=$date_of_birth_array[2].'-'.$date_of_birth_array[1].'-'.$date_of_birth_array[0];
-
-                
-        }
-
-
-        $passport_submission_date = $request->passport_submission_date;
-
-        if(trim($passport_submission_date)!=trim('')){
-
-            $passport_submission_date_array = explode('-', $passport_submission_date);
-            $passport_submission_date = $passport_submission_date_array[2].'-'.$passport_submission_date_array[1].'-'.$passport_submission_date[0];
-
-        }
-
-        $medical_formalities_ok=$request->medical_formalities_ok;
-        $calling_visa_ok = $request->calling_visa_ok;
-        $flight_ok = $request->flight_ok;
-        $approach_mode = $request->approach_mode;
-        $agent_id = $request->agent;
-        $medical_condition=$request->medical_condition;
-        $company=trim($request->company);
-
-        $first_lang = $request->first_lang;
-        $countryOfCitizenship = $request->countryOfCitizenship;
-        $nationality = $request->nationality;
-        $passport_no = $request->passport_no;
-        $passport_expiry_date = $request->passport_expiry_date;
-
-        if(trim($passport_expiry_date)!=trim('')){
-            $passport_expiry_date_array = explode('-',$passport_expiry_date);
-            $passport_expiry_date= $passport_expiry_date_array[2].'-'.$passport_expiry_date_array[1].'-'.$passport_expiry_date_array[0];
-
-        }
-
-        $nid_number = $request->nid_number;
-        $marital_status=$request->marital_status;
-        $gender = $request->gender;
-
-        $division = $request->division;
-        if(empty(trim($division))){
-            $division=0;
-
-        }
-
-
-        $district = $request->district;
-        if(empty($district)){
-            $district=0;
-
-        }
-        $thana= $request->thana;
-        if(empty(trim($thana))){
-            $thana=0;
-
-        }
-        $postal_code= $request->post_code;
-
-
-        $address= $request->address;
-        $city = $request->city;
-        $country = $request->country;
-        $state_province = $request->state_province;
-        // $email = $user->email;
-        $zip = $request->zip;
-        $phone = $request->phone;
-        $organization_category = $request->organization_category;
-        $company = $request->company;
-        $medical_centre=$request->medical_centre;
-        $medical_date = $request->medical_date;
-        if(trim($medical_date)!=trim('')){
-
-            $medical_date_array = explode('-',$medical_date);
-            $medical_date=$medical_date_array[2].'-'.$medical_date_array[1].'-'.$medical_date_array[0];
-        }
-
-        $job_designation = $request->job_designation;
-        $departure_date = $request->departure_date;
-
-
-        if(trim($departure_date)!=trim('')){
-
-                $daparture_date_array =explode('-',$departure_date);
-                $departure_date=$daparture_date_array[2].'-'.$daparture_date_array[1].'-'.$daparture_date_array[0];
-        }
-
-        $esd_to_reach = $request->esd_to_reach;
-
-        if(trim($esd_to_reach)!=trim('')){
+                'password' => 'required|string|min:6|same:password_again',
+                'password_again'=>'required|string|min:6',
             
-            $esd_to_reach_array=explode('-',$esd_to_reach);
-            $esd_to_reach= $esd_to_reach_array[2].'-'.$esd_to_reach_array[1].'-'.$esd_to_reach_array[0];
-
-
-
-        }
-
-
-
-
-        
-        $user = User::find($id);
-        $user->first_name=trim($first_name);
-        $user->middle_name=trim($middle_name);
-        $user->last_name= trim($last_name);
-
-        
-        if(!empty(trim($date_of_birth))){
-
-            $user->dob= trim($date_of_birth);
-        }
-
-
-
-
-
-
-
-        if(!empty(trim($passport_submission_date))){
-
-            $user->passport_submission_date = trim($passport_submission_date);
-
-        }
-
-        if($medical_formalities_ok){
-
-            $user->medical_ok = 1;
-
-        }else{
-
-            $user->medical_ok = 0;
-
-        }
-
-        
-        if($calling_visa_ok){
             
-            $user->calling_visa_ok=1;
+        ]);
 
-        }else{
-
-            $user->calling_visa_ok=0;
-
-        }
-
-        if($flight_ok){
-         
-            $user->flight_ok = 1;
-
-        }else{
-
-
-            $user->flight_ok = 0;
-
-        }
-
-        if($agent_id){
-
-            $user->agent_id=$agent_id;
-        }
+        }    
 
         
-        if(!empty($medical_condition)){
 
-            $user->medical_condition = $medical_condition;
+        if($user_type==1){
 
+            // Create the user
+        $user = TeacherStaff::where('user_id',$user_id)->update([
+            'name' => $request->input('name'),
+            'father_name' => $request->input('father_name'),
+            'rank'=> $request->input('rank'), 
+            'permanent_address'=>$request->input('permanent_address'),
+            'temporary_address'=>$request->input('temporary_address'),
+            'khidmat_year'=> $request->input('khidmat_year'),
+            'ex_or_current'=> $request->input('ex_or_current'),
+            'current_working_institution'=> $request->input('current_institution'),  
+            'whatsapp'=> $request->input('whatsapp'),
+            'email' => $request->input('email'),
+
+        ]);
+
+        $user =TeacherStaff::find($user_id);
+        // $token = $user->createToken('AnNoor')->accessToken;
+
+        }    // end of $user_type==1
+
+        if($user_type==2){
+
+             Fujala::where('user_id',$user_id)->update([
+                'name'=>$request->input('name'),
+                'father_name'=>$request->input('father_name'),
+                // 'mobile_own'=>$request->input('mobile_own'),
+                'permanent_address_village'=>$request->input('permanent_address_village'),
+                'permanent_address_post_office'=>$request->input('permanent_address_post_office'),
+                'permanent_address_thana'=>$request->input('permanent_address_thana'),
+                'permanent_address_district'=>$request->input('permanent_address_district'),
+                'permanent_address_division'=>$request->input('permanent_address_division'),
+                'temporary_address'=>$request->input('temporary_address'),
+                'marital_status'=>$request->input('marital_status'),
+                'mashgala_workplaces'=>$request->input('mashgala_workplaces'),
+                'facebook_id'=>$request->input('facebook_id'),
+                'faragat_year_hijri'=>$request->input('faragat_year_hijri'),
+                'faragat_year_christian'=>$request->input('faragat_year_christian'),
+                'blood_group'=>$request->input('blood_group'),
+                'last_jamat_attended'=>$request->input('last_jamat_attended'),
+                // 'email'=>$request->input('email'),
+                'mobile_own'=>$request->input('mobile_own'),
+                'mobile_guardian'=>$request->input('mobile_guardian'),
+                'whatsapp'=>$request->input('whatsapp'),
+                'tasnif'=>$request->input('tasnif'),
+                'social_organizational_contribution' =>$request->input('social_organizational_contribution'),
+                // 'password' =>$request->input('password'),
+     
+                 ]);   
+
+             $user =User::find($user_id);
+
+             // $token = $user->createToken('AnNoor')->accessToken;
         }
 
-        if(!empty($approach_mode)){
-
-            $user->approach_mode = $approach_mode;
-
-        }
-
-        
-        
-        
-        $user->first_lang=trim($first_lang);
-        $user->country_of_citizenship= trim($countryOfCitizenship);
-        $user->nationality= trim($nationality);
-        $user->passport_num= trim($passport_no);
-
-        if(!empty(trim($passport_expiry_date))){
-
-                $user->passport_expiry_date= trim($passport_expiry_date);
-        }
-        
-        $user->nid_num = trim($nid_number);
-        $user->marital_status=trim($marital_status);
-        $user->gender=trim($gender);
+        if($user_type==3){
 
 
-        $user->division_id = $division;
-        $user->district_id = $district;
-        $user->thana_id= $thana;
-        $user->postal_code= $postal_code;
 
-        $user->address = trim($address);
-        $user->city= trim($city);
-        $user->country= trim($country);
-        $user->state_province= trim($state_province);
-        // $user->email= trim($email);
-        $user->zip = trim($zip);
-        $user->phone = trim($phone);
-        $user->organization_category= trim($organization_category);
-        $user->company= trim($company);
-        $user->medical_center= trim($medical_centre);
-
-        if(!empty(trim($medical_date))){
-
-            $user->medical_date = trim($medical_date);    
-
-        }
-        
-        $user->job_designation = trim($job_designation);
-
-        if(!empty(trim($departure_date))){
-
-            $user->departure_date = trim($departure_date);
-
-        }
-        
-        if(!empty(trim($esd_to_reach))){
-
-            // echo ' esd_to_reach = '.$esd_to_reach;
+        $user =  Student::where('user_id',$user_id)->update([
             
-            $user->esd_to_reach= trim($esd_to_reach);
-        }
+ 
+                'user_id' => $user_id,    
+                'user_type'=>$user_type,
+                'name'=>$request->input('name'),
+                'father_name'=>$request->input('father_name'),
+                'dob' => $request->input('dob'),
+                'mobile_own'=>$request->input('mobile_own'),
+                'permanent_address_village'=>$request->input('permanent_address_village'),
+                'permanent_address_post_office'=>$request->input('permanent_address_post_office'),
+                'permanent_address_thana'=>$request->input('permanent_address_thana'),
+                'permanent_address_district'=>$request->input('permanent_address_district'),
+                'permanent_address_division'=>$request->input('permanent_address_division'),
+                'temporary_address'=>$request->input('temporary_address'),
+                'marital_status'=>$request->input('marital_status'),
+                'mashgala_workplaces'=>$request->input('mashgala_workplaces'),
+                'facebook_id'=>$request->input('facebook_id'),
+                'faragat_year_hijri'=>$request->input('faragat_year_hijri'),
+                'faragat_year_christian'=>$request->input('faragat_year_christian'),
+                'blood_group'=>$request->input('blood_group'),
+                'last_jamat_attended'=>$request->input('last_jamat_attended'),
+                'email'=>$request->input('email'),
+                'mobile_own'=>$request->input('mobile_own'),
+                'mobile_guardian'=>$request->input('mobile_guardian'),
+                'whatsapp'=>$request->input('whatsapp'),
+                'tasnif'=>$request->input('tasnif'),
+                'social_organizational_contribution' =>$request->input('social_organizational_contribution'),
+                // 'password' =>Hash::make($request->input('password')),
+     
+                 ]);       
 
-
+        }//end of if $user_type ==3
         
+        if($user_type==4){
 
+            $donation_amount=$request->input('amount');
+            if(empty($donation_amount)){
 
-        if ($request->hasFile('passport_size_photo')) {
-
-            $file= $request->file('passport_size_photo');
-
-            $passport_size_photo_found=$user->passport_size_photo;
-
-            /*******************************/
-
-            if($passport_size_photo_found){
-
-                if(File::exists(public_path('uploads/passport_size_photo/'.$passport_size_photo_found))){
-
-                    File::delete(public_path('uploads/passport_size_photo/'.$passport_size_photo_found));
-
-                }
-
-
+                $donation_amount=0;
 
             }
 
-
-        
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
-
-
-            $destinationPath = public_path('/thumbnails/passport_size_photo');
-
-            $imgFile = Image::make($file->getRealPath());
+             Donor::where('user_id',$user_id)->update([
+                'name'=>$request->input('name'),
+                
+                
+                'temporary_address'=>$request->input('temporary_address'),
             
-            $imgFile->resize(200, 200, function ($constraint) {
+                'profession'=> $request->input('profession'),
+                'current_working_institution'=> $request->input('current_institution'),
+                'rank'=> $request->input('rank'),
+                'temporary_address'=> $request->input('temporary_address'),
+                'donation_type'=> $request->input('donation_types'),
+                'donation_amount'=> $donation_amount,
+                'donation_fields'=> $request->input('donation_fields')
 
-                $constraint->aspectRatio();
+                // 'password' =>$request->input('password'),
+     
+                 ]);   
 
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/passport_size_photo');
-            
+             // echo "user id = ".$user_id;
+
+             $user =User::find($user_id);
+
+             // $token = $user->createToken('AnNoor')->accessToken;
+        }
+
+        if($user_type==5){
 
 
-            $file->move($destinationPath, $filenameNew);
-            $user->passport_size_photo=$filenameNew;
+             Volunteer::where('user_id',$user_id)->update([
+                'name'=>$request->input('name'),
+                'father_name'=> $request->input('father_name'),
 
+                'temporary_address'=> $request->input('current_address'),   
+                'profession'=>$request->input('profession'),
+                'current_working_institution'=>$request->input('current_working_institution'),
 
+                
+                'mobile_own'=>$request->input('mobile_own'),
+                'email'=> $request->input('email'),
+                'whatsapp'=> $request->input('whatsapp'),
+                'age'=> $request->input('age'),
+                'educational_institution'=> $request->input('educational_institution'),
+                'current_working_institution'=> $request->input('current_working_institution'),
+                'skill_experience'=> $request->input('skill_experience')
 
+                 ]);   
 
+             // echo "user id = ".$user_id;
+
+             $user =User::find($user_id);
+
+             // $token = $user->createToken('AnNoor')->accessToken;
         }
 
 
-        /*
+        // You can also generate a token for the user if needed
+        // $token = $user->createToken('AnNoor')->accessToken;
+
+        return response()->json(['token' => $token], 200);
+        // return response()->json([], 200);
+
+    }// end of function updateUser
 
 
-        if ($request->hasFile('nid_photo')) {
+    public function signin(Request $request){
 
-            $file= $request->file('nid_photo');
+        $mobile=$request->mobile;
+
+        // echo " mobile = ".$mobile;
+        $password=$request->password;
         
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
+        $user_result=User::where(array('mobile'=>$mobile))->get();
 
+        $user_exists=0;
+        if(count($user_result)){
+            $password_db_hashed = $user_result[0]->password;
 
-            // echo 'nid filename new = '.$filenameNew;
+            if(Hash::check($password, $password_db_hashed)){
 
-            $destinationPath = public_path('/thumbnails/nid_photo');
-            
-            
-            $imgFile = Image::make($file->getRealPath());
-            
-            $imgFile->resize(200, 200, function ($constraint) {
+                    $user_exists=1;
 
-                $constraint->aspectRatio();
+            }else{
 
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/nid_photo');
-            
-
-
-            $file->move($destinationPath, $filenameNew);
-            $user->nid_photo=$filenameNew;
-
+                $user_exists=0;
+            }
         }
 
+        if($user_exists==1){
 
-        if ($request->hasFile('passport_copy')) {
-
-            $file= $request->file('passport_copy');
-        
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
+            $user_type_found=$user_result[0]->user_type;
+            $approved = $user_result[0]->approved;
+            $user_id = $user_result[0]->id;
 
 
-            $destinationPath = public_path('/thumbnails/passport_copy');
+            // $token = $user_result[0]->createToken('AnNoor')->accessToken;
 
-            $imgFile = Image::make($file->getRealPath());
-            
-            $imgFile->resize(200, 200, function ($constraint) {
+            return response()->json(['user_exists'=>1,'user_type'=>$user_type_found,
+                // 'approved'=>$approved,
+                'user_id'=>$user_id], 200);
 
-                $constraint->aspectRatio();
+        }else{
 
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/passport_copy');
-            
-
-
-            $file->move($destinationPath, $filenameNew);
-            $user->passport_copy=$filenameNew;
-
-        }
-
-        if ($request->hasFile('vaccine_photo')) {
-
-            $file= $request->file('vaccine_photo');
-        
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
-
-
-            $destinationPath = public_path('/thumbnails/medical_photo');
-
-
-
-            $imgFile = Image::make($file->getRealPath());
-            
-            $imgFile->resize(200, 200, function ($constraint) {
-
-                $constraint->aspectRatio();
-
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/medical_photo');
-            
-
-
-            $file->move($destinationPath, $filenameNew);
-            $user->vaccine_photo=$filenameNew;
+            return response()->json([ 'user_exists'=>0], 200);
 
         }
 
 
 
+    }// end of function signin
 
-        if ($request->hasFile('calling_photo')) {
 
-            $file= $request->file('calling_photo');
+
+
+    public function approveDisapproveNow(Request $request){
+
+        $id =$request->id;
+        $user_type =$request->user_type;
+        $approved_found=$request->approved_found;
+
+        $approve_action=0;
+        \DB::enableQueryLog();
         
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
+        if($user_type==1){
 
 
-            $destinationPath = public_path('/thumbnails/calling_photo');
-
-            $imgFile = Image::make($file->getRealPath());
-            
-            $imgFile->resize(200, 200, function ($constraint) {
-
-                $constraint->aspectRatio();
-
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/calling_photo');
-            
+            $user=TeacherStaff::find($id);
 
 
-            $file->move($destinationPath, $filenameNew);
-            $user->calling_photo=$filenameNew;
+        }else if($user_type==2){
+
+
+            $user=Fujala::find($id);
+
+
+        }else if($user_type==3){
+
+
+            $user=Student::find($id);
+
+
+        }else if($user_type==4){
+
+
+            $user=Donor::find($id);
+
+
+        }else if($user_type==5){
+
+
+            $user=Volunteer::find($id);
+
 
         }
 
-
-
-        if ($request->hasFile('visa_stamping_photo')) {
-
-            $file= $request->file('visa_stamping_photo');
         
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
+
+        $approved_found=$request->approved_found;
+
+        if($approved_found==1){
+
+            $approve_action='0';
 
 
-            $destinationPath = public_path('/thumbnails/visa_stamping_photo');
 
-            $imgFile = Image::make($file->getRealPath());
-            
-            $imgFile->resize(200, 200, function ($constraint) {
+        }else if($approved_found==0){
 
-                $constraint->aspectRatio();
-
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/visa_stamping_photo');
-            
+            $approve_action='1';
 
 
-            $file->move($destinationPath, $filenameNew);
-            $user->visa_stamping_photo=$filenameNew;
 
         }
 
-
-
-
-
-
-        if ($request->hasFile('flight_photo')) {
-
-            $file= $request->file('flight_photo');
         
-            // $destinationPath = 'uploads/';
-            $filenameNew = time().'.'.$file->getClientOriginalName();
-            //Input::file('image')->move($destinationPath, $filename);
-
-
-            $destinationPath = public_path('/thumbnails/flight_photo');
-
-            $imgFile = Image::make($file->getRealPath());
-            
-            $imgFile->resize(200, 200, function ($constraint) {
-
-                $constraint->aspectRatio();
-
-            })->save($destinationPath.'/'.$filenameNew);
-            
-            
-            $destinationPath = public_path('/uploads/flight_photo');
-            
-
-
-            $file->move($destinationPath, $filenameNew);
-            $user->flight_photo=$filenameNew;
-
-        }
-
-
-        */
-
-
-        $user->added_by = Auth::user()->id;
-
-        DB::transaction(function() use ($user, $request){
-
-
-                
-                $user->save();
-
-                $user_id_created= $user->id;
-
-
-                
-
-                $nid_doc_labels = json_decode($request->nid_doc_labels);
-                
-                if(!$nid_doc_labels){
-
-                    $nid_doc_labels=[];
-
-                }    
-
-
-                $nid_image_names = json_decode($request->nid_image_names);
-
-                if(!$nid_image_names){
-
-                    $nid_image_names=[];
-
-                }
-
-
-
-                $nid_pdf_names = json_decode($request->nid_pdf_names);
-
-                if(!$nid_pdf_names){
-
-                    $nid_pdf_names=[];
-
-                }
-
-
-
-                $passport_copy_labels = json_decode($request->passport_copy_labels);
-
-                if(!$passport_copy_labels){
-
-                    $passport_copy_labels=[];
-
-                }
-                $passport_copy_image_names = json_decode($request->passport_copy_image_names);
-                
-                if(!$passport_copy_image_names){
-
-                    $passport_copy_image_names=[];
-
-                }
-                $passport_copy_pdf_names = json_decode($request->passport_copy_pdf_names);
-
-                if(!$passport_copy_pdf_names){
-
-                    $passport_copy_pdf_names=[];
-
-                }
-
-
-
-                $medical_doc_labels = json_decode($request->medical_doc_labels);
-                if(!$medical_doc_labels){
-
-                    $medical_doc_labels=[];
-
-                }
-                $medical_image_names = json_decode($request->medical_image_names);
-
-                if(!$medical_image_names){
-                    $medical_image_names=[];
-
-                }
-                $medical_pdf_names = json_decode($request->medical_pdf_names);
-
-                if(!$medical_pdf_names){
-
-                    $medical_pdf_names=[];
-
-                }
-
-
-                $visa_stamping_doc_labels = json_decode($request->visa_stamping_doc_labels);
- 
-                if(!$visa_stamping_doc_labels){
-
-                    $visa_stamping_doc_labels=[];
-
-                }
-                $visa_stamping_image_names = json_decode($request->visa_stamping_image_names);
-
-                if(!$visa_stamping_image_names){
-                    $visa_stamping_image_names=[];
-
-                }
-                $visa_stamping_pdf_names = json_decode($request->visa_stamping_pdf_names);
-
-                if(!$visa_stamping_pdf_names){
-
-                    $visa_stamping_pdf_names=[];
-
-                }
-
-
-                $calling_doc_labels = json_decode($request->calling_doc_labels);
- 
-                if(!$calling_doc_labels){
-
-                    $calling_doc_labels=[];
-
-                }
-                $calling_image_names = json_decode($request->calling_image_names);
-
-                if(!$calling_image_names){
-                    $calling_image_names=[];
-
-                }
-                $calling_pdf_names = json_decode($request->calling_pdf_names);
-
-                if(!$calling_pdf_names){
-
-                    $calling_pdf_names=[];
-
-                }
-
-
-                $flight_doc_labels = json_decode($request->flight_doc_labels);
- 
-                if(!$flight_doc_labels){
-
-                    $flight_doc_labels=[];
-
-                }
-                $flight_image_names = json_decode($request->flight_image_names);
-
-                if(!$flight_image_names){
-                    $flight_image_names=[];
-
-                }
-                $flight_pdf_names = json_decode($request->flight_pdf_names);
-
-                if(!$flight_pdf_names){
-
-                    $flight_pdf_names=[];
-
-                }
-
-
-
-
-                $doc_info_all=array();
-
-
-                for($i=0; $i<count($nid_doc_labels); $i++){
-
-                     $doc_info=array();
-                     $doc_info['description']=$nid_doc_labels[$i];
-                     $pdf_doc = $nid_pdf_names[$i];
-                     $doc_info['pdf_doc'] =$pdf_doc;
-                     $doc_info['thumbnail']=$nid_image_names[$i];
-                     $doc_info['large_image']=$nid_image_names[$i];
-                     $doc_info['user_id']=$user_id_created;
-                     $doc_info['doc_category']=2; // 2=> nid from db column comment
-                     $doc_info['done_by']= Auth::user()->id;
-                     $doc_info['created_at']= Carbon::now();
-                     $doc_info['updated_at']= Carbon::now();
-                     
-
-                     $doc_info_all[]=$doc_info;
-
-                }// end of for loop
-
-
-
-                
-                
-                for($i=0; $i<count($passport_copy_labels); $i++){
-
-                     $doc_info=array();
-                     $doc_info['description']=$passport_copy_labels[$i];
-                     $pdf_doc = $passport_copy_pdf_names[$i];
-                     $doc_info['pdf_doc'] =$pdf_doc;
-                     $doc_info['thumbnail']=$passport_copy_image_names[$i];
-                     $doc_info['large_image']=$passport_copy_image_names[$i];
-                     $doc_info['user_id']=$user_id_created;
-                     $doc_info['doc_category']=6; // 6=> nid from db column comment
-                     $doc_info['done_by']= Auth::user()->id;
-                     $doc_info['created_at']= Carbon::now();
-                     $doc_info['updated_at']= Carbon::now();
-
-                     $doc_info_all[]=$doc_info;
-
-                }// end of for loop
-
-
-
-
-                
-                
-                for($i=0; $i<count($medical_doc_labels); $i++){
-
-                     $doc_info=array();
-                     $doc_info['description']=$medical_doc_labels[$i];
-                     $pdf_doc = $medical_pdf_names[$i];
-                     $doc_info['pdf_doc'] =$pdf_doc;
-                     $doc_info['thumbnail']=$medical_image_names[$i];
-                     $doc_info['large_image']=$medical_image_names[$i];
-                     $doc_info['user_id']=$user_id_created;
-                     $doc_info['doc_category']=5; // 6=> nid from db column comment
-                     $doc_info['done_by']= Auth::user()->id;
-                     $doc_info['created_at']= Carbon::now();
-                     $doc_info['updated_at']= Carbon::now();
-
-                     $doc_info_all[]=$doc_info;
-
-                }// end of for loop
-
-
-
-                // var_dump($visa_stamping_doc_labels);    
-
-                for($i=0; $i<count($visa_stamping_doc_labels); $i++){
-
-                     $doc_info=array();
-                     $doc_info['description']=$visa_stamping_doc_labels[$i];
-                     $pdf_doc = $visa_stamping_pdf_names[$i];
-                     $doc_info['pdf_doc'] =$pdf_doc;
-                     $doc_info['thumbnail']=$visa_stamping_image_names[$i];
-                     $doc_info['large_image']=$visa_stamping_image_names[$i];
-                     $doc_info['user_id']=$user_id_created;
-                     $doc_info['doc_category']=7; // 6=> nid from db column comment
-                     $doc_info['done_by']= Auth::user()->id;
-                     $doc_info['created_at']= Carbon::now();
-                     $doc_info['updated_at']= Carbon::now();
-
-                     $doc_info_all[]=$doc_info;
-
-                }// end of for loop
-
-
-                for($i=0; $i<count($calling_doc_labels); $i++){
-
-                     $doc_info=array();
-                     $doc_info['description']=$calling_doc_labels[$i];
-                     $pdf_doc = $calling_pdf_names[$i];
-                     $doc_info['pdf_doc'] =$pdf_doc;
-                     $doc_info['thumbnail']=$calling_image_names[$i];
-                     $doc_info['large_image']=$calling_image_names[$i];
-                     $doc_info['user_id']=$user_id_created;
-                     $doc_info['doc_category']=3; // 6=> nid from db column comment
-                     $doc_info['done_by']= Auth::user()->id;
-                     $doc_info['created_at']= Carbon::now();
-                     $doc_info['updated_at']= Carbon::now();
-
-                     $doc_info_all[]=$doc_info;
-
-                }// end of for loop
-
-
-
-
-
-                for($i=0; $i<count($flight_doc_labels); $i++){
-
-                     $doc_info=array();
-                     $doc_info['description']=$flight_doc_labels[$i];
-                     $pdf_doc = $flight_pdf_names[$i];
-                     $doc_info['pdf_doc'] =$pdf_doc;
-                     $doc_info['thumbnail']=$flight_image_names[$i];
-                     $doc_info['large_image']=$flight_image_names[$i];
-                     $doc_info['user_id']=$user_id_created;
-                     $doc_info['doc_category']=4; // 4=> flight from db column comment
-                     $doc_info['done_by']= Auth::user()->id;
-                     $doc_info['created_at']= Carbon::now();
-                     $doc_info['updated_at']= Carbon::now();
-
-                     $doc_info_all[]=$doc_info;
-
-                }// end of for loop
-
-
-
-                // var_dump($doc_info_all);
-
-
-
-
-                Doc::insert($doc_info_all);
-
-
-
-        });// end of DB::transaction
-
 
         
 
-        $user->save();
+        if ($user) {
+
+            $user->approved= $approve_action;
+            $user->save();
+
+            $user_again = Donor::find($id);
+
+                    
+                    // Get the raw SQL query
+                    $queryLog = \DB::getQueryLog();
+
+                    // Check if there are queries in the log
+                    if (count($queryLog) > 0) {
+                        // Get the first query from the log
+                        $query = $queryLog[0]['query'];
+                        $bindings = $queryLog[0]['bindings'];
+
+                        // Interpolate the bindings into the SQL
+                        $sql = vsprintf(str_replace('?', "'%s'", $query), $bindings);
 
 
-         return response()->json(['success'=>true],200);  
+                        // Output the raw SQL query
+                        //dd($sql);
+                    } else {
+                        // No queries in the log
+                        //dd('No queries in the log.');
+                    }
+
+                    \DB::disableQueryLog();
         }
 
+        // var_dump($query);
 
-    }// end of method update
+        // echo $query->toSql();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
+        // $query=$query->update(['approved'=> $approve_action]);
+
+        /*echo "<br/> user id = ".$user_id;
+
+        echo '<br/><br/><br/><br/>';*/
+        return 1;
+
+    }// end of function approveDisapproveNow
 }

@@ -13786,7 +13786,8 @@ body {
 }
 .menu .ps__thumb-y,
 .menu .ps__rail-y {
-  width: 0.125rem !important;
+/*  width: 0.125rem !important;*/
+width: 0.645rem !important;
 }
 .menu .ps__rail-y {
   right: 0.25rem !important;

@@ -1,6 +1,6 @@
 @extends('layouts/blankLayout')
 
-@section('title', 'Login Basic - Pages')
+@section('title', 'Login  -')
 
 @section('page-style')
 <!-- Page -->
@@ -19,7 +19,7 @@
             <a href="{{url('/login')}}" class="app-brand-link gap-2">
               <!-- <span class="app-brand-logo demo">@include('_partials.macros',["width"=>25,"withbg"=>'#696cff'])</span> -->
               <span class="app-brand-logo demo"><img style="width:130px; height: 130px;" src="{{URL::to('/assets/img/logo.png')}}" alt="logo" /></span>
-              <span class="app-brand-text demo text-body fw-bolder">{{config('variables.templateName')}}</span>
+              <!-- <span class="app-brand-text demo text-body fw-bolder">{{config('variables.templateName')}}</span> -->
             </a>
           </div>
           <!-- /Logo -->
@@ -91,11 +91,11 @@
           </form>
 
           <p class="text-center">
-            <span>New on our platform?</span>
-            <!-- <a href="{{url('auth/register-basic')}}"> -->
+            <!-- <span>New on our platform?</span>
+            
               <a href="{{url('register')}}">
               <span>Create an account</span>
-            </a>
+            </a> -->
           </p>
         </div>
       </div>

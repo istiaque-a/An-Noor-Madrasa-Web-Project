@@ -49,8 +49,8 @@
             <th>Name</th>
             <th>Email</th>
             <th>Passport No</th>
-            <th>Organization Name</th>
-            <th>Organization Category</th>
+            <th>Company Name</th>
+            <th>Company Category</th>
             
             <th>JOB DESCRITION</th>
             <th>STATUS</th>
@@ -104,7 +104,7 @@
 
             {data: 'email', name: 'email'},
             {data: 'passport_num', name: 'passport_num'},
-            {data: 'company', name:'company' },
+            {data: 'company_found', name:'company' },
             {data: 'organization_category', name: 'organization_category'},
             {data: 'job_designation', name: 'job_designation'},
             /*{data: 'nationality', name: 'nationality'},

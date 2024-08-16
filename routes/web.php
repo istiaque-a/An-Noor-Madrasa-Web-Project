@@ -105,15 +105,25 @@ Route::get('/user/edit/{id}', $controller_path . '\UserController@edit')->name('
 
 Route::post('/user/add-now', $controller_path . '\UserController@store')->name('user-add-now');
 Route::post('/user/update-now', $controller_path . '\UserController@update')->name('user-update-now');
+
+
+
 Route::get('/agent/add', $controller_path . '\tables\Basic@agentAdd')->name('agent-add');
+Route::get('/agent/all', $controller_path . '\tables\Basic@agentAll')->name('agent-all');
+Route::get('/agent/edit/{id}', $controller_path . '\UserController@edit_agent')->name('edit-agent');
+Route::post('/edit_agent_now', [App\Http\Controllers\UserController::class, 'edit_agent_now'])->name(
+	'edit_agent_now');
 
 
 // Route::post('/doc/upload', $controller_path . '\tables\Basic@docUploadNow')->name('doc-upload-now');
-Route::post('/doc/upload_now', $controller_path . '\UserController@doc_upload_now')->name('doc-upload-now');
+Route::post('/doc/my_upload_now', $controller_path . '\UserController@my_doc_upload_now')->name('my-doc-upload-now');
+Route::post('/delete_thedoc_now', $controller_path . '\UserController@delete_thedoc_now')->name('delete_thedoc_now');
+
+Route::post('/delete_passport_photo_now', $controller_path . '\UserController@delete_passport_photo_now')->name('delete_passport_photo_now');
 
 
 Auth::routes();
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard')->middleware('auth');
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/payment/create-schedule', [App\Http\Controllers\PaymentScheduleController::class, 'create'])->name('create-payment-schedule');
 Route::post('/payment/create-schedule-now', [App\Http\Controllers\PaymentScheduleController::class, 'store'])->name('create-schedule-now');
@@ -134,3 +144,210 @@ Route::get('/company-create/make', [App\Http\Controllers\CompanyController::clas
 
 
 Route::post('/create-company-now', [App\Http\Controllers\CompanyController::class, 'store'])->name('create-company-now');
+
+Route::post('/edit-company-now', [App\Http\Controllers\CompanyController::class, 'update'])->name(
+	'edit-company-now');
+
+
+
+
+
+Route::get('/company/all', [App\Http\Controllers\CompanyController::class, 'index'])->name('companies-all');
+
+Route::get('/company/edit/{id}', [App\Http\Controllers\CompanyController::class, 'edit'])->name('company-edit');
+
+
+Route::get('/user/returned', [App\Http\Controllers\UserController::class, 'return_list'])->name('return-list');
+
+/*********************************************************************************************************/
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/teachersandstaff', [App\Http\Controllers\UserController::class, 'getTeachersAndStaff'])->name('getTeachersAndStaff');
+
+
+Route::get('/fujala', [App\Http\Controllers\UserController::class, 'getFujala'])->name('getFujala')->middleware('auth');
+
+Route::get('/students', [App\Http\Controllers\UserController::class, 'getStudents'])->name('getStudents')->middleware('auth');
+
+
+Route::get('/donors', [App\Http\Controllers\UserController::class, 'getDonors'])->name('getDonors')->middleware('auth');
+
+Route::get('/volunteers', [App\Http\Controllers\UserController::class, 'getVolunteers'])->name('getVolunteers')->middleware('auth');
+
+
+
+
+
+
+Route::get('/teachersandstaffDataTable', [App\Http\Controllers\UserController::class, 'getTeachersAndStaffDataTable'])
+->name('teachersAndStaffDataTable')->middleware('auth');
+
+Route::get('/fujalaDataTable', [App\Http\Controllers\UserController::class, 'getFujalaDataTable'])
+->name('fujalaDataTable');
+
+Route::get('/studentsDataTable', [App\Http\Controllers\UserController::class, 'getStudentsDataTable'])
+->name('studentsDataTable');
+
+
+Route::get('/volunteersDataTable', [App\Http\Controllers\UserController::class, 'getVolunteersDataTable'])
+->name('volunteersDataTable');
+
+
+Route::get('/donorsDataTable', [App\Http\Controllers\UserController::class, 'getDonorsDataTable'])
+->name('donorsDataTable');
+
+
+
+Route::post('/approve_disapprove_now', [App\Http\Controllers\UserController::class, 'approveDisapproveNow'])
+->name('approve_disapprove_now');
+
+Route::get('/notice/add', [App\Http\Controllers\NoticeController::class, 'add_notice'])
+->name('addNotice');
+
+Route::get('/noticeboard', [App\Http\Controllers\NoticeController::class, 'noticeboard'])
+->name('noticeboard');
+
+Route::get('/notice/edit/{id}', [App\Http\Controllers\NoticeController::class, 'notice_edit'])
+->name('noticeEdit');
+
+
+
+Route::post('edit_notice_now',[App\Http\Controllers\NoticeController::class,'edit_notice_now'])->name('edit_notice_now');
+
+
+Route::post('add_notice_now',[App\Http\Controllers\NoticeController::class,'add_notice_now'])->name('add_notice_now');
+
+Route::get('/notice/add',[App\Http\Controllers\NoticeController::class,'notice_add'])->name('noticeAdd');
+
+Route::get('/masjlishe-shura/add',[App\Http\Controllers\MajlisheShuraController::class,'create'])->name(
+	'masjlisheShuraAdd');
+
+Route::get('/foundation-committee/add',[App\Http\Controllers\FoundationCommitteeController::class,'create'])->name('foundationCommitteeAdd')->middleware('auth');
+
+
+Route::get('/fujala-high-committee/add',[App\Http\Controllers\FujalaHighCommitteeController::class,'create'])->name('fujala-high-committee-add')->middleware('auth');
+
+
+Route::post('/add_majlishe_shura_now',[App\Http\Controllers\MajlisheShuraController::class,'store'])->name('add_majlishe_shura_now');
+
+Route::post('/add_foundation-committee_now',[App\Http\Controllers\FoundationCommitteeController::class,'store'])->name('add_foundation_committee_now');
+
+Route::post('/add_fujala-high-committee_now',[App\Http\Controllers\FujalaHighCommitteeController::class,'store'])->name('add_fujala-high-committee_now');
+
+
+
+Route::get('/masjlishe-shura/all',[App\Http\Controllers\MajlisheShuraController::class,
+	'show_all_majlishe_shura'])->name('masjlishe-shura_all')->middleware('auth');
+
+Route::get('/foundation-committee/all',[App\Http\Controllers\FoundationCommitteeController::class,
+	'show_all_foundation_committee'])->name('foundation-committee-all')->middleware('auth');
+
+Route::get('/fujala-high-committee/all',[App\Http\Controllers\FujalaHighCommitteeController::class,
+	'show_all_fujala_high_committee'])->name('fujala-high-committee-all')->middleware('auth');
+
+
+Route::get('/masjlishe-shura/indiv/{id}',[App\Http\Controllers\MajlisheShuraController::class,
+	'show'])->name('masjlishe_shura_indiv');
+
+
+Route::get('/foundation-committee/indiv/{id}',[App\Http\Controllers\FoundationCommitteeController::class,
+	'show'])->name('foundation_committee_indiv');
+
+Route::get('/fujala_high_committee/indiv/{id}',[App\Http\Controllers\FujalaHighCommitteeController::class,
+	'show'])->name('fujala_high_committee_indiv');
+
+Route::get('/activities/create',[App\Http\Controllers\FoundationActivityController::class,
+	'create'])->name('create_activities')->middleware('auth');
+
+
+Route::get('/activities',[App\Http\Controllers\FoundationActivityController::class,
+	'activities_all'])->name('activities_all')->middleware('auth');
+
+
+Route::get('/activity/details/{id}',[App\Http\Controllers\FoundationActivityController::class,
+	'activity_details'])->name('activity_details')->middleware('auth');
+
+
+Route::get('/privacy',[App\Http\Controllers\HomeController::class,
+	'privacy'])->name('privacy');
+
+Route::get('/delete-account',[App\Http\Controllers\HomeController::class,
+	'delete_account'])->name('delete_account');
+
+
+Route::post('/add_activity_now',[App\Http\Controllers\FoundationActivityController::class,'store'])->name(
+	'add_activity_now');
+
+Route::post('/update_majlishe_shura_now',[App\Http\Controllers\MajlisheShuraController::class,'update'])->name('update_majlishe_shura_now');
+
+Route::post('/update_foundation_committee_now',[App\Http\Controllers\FoundationCommitteeController::class,'update'])->name('update_foundation_committee_now');
+
+Route::post('/update_fujala_high_committee_now',[App\Http\Controllers\FujalaHighCommitteeController::class,'update'])->name('update_fujala_high_committee_now');
+
+Route::get('/jobs/{approved}',[App\Http\Controllers\JobController::class,
+	'show_jobs'])->name('show_jobs')->middleware('auth');
+
+Route::get('/job/details/{id}',[App\Http\Controllers\JobController::class,
+	'job_details'])->name('job_details')->middleware('auth');
+
+
+Route::post('approve_disapprove_job_now',[App\Http\Controllers\JobController::class,
+	'approve_disapprove_job_now'])->name('approve_disapprove_job_now')->middleware('auth');
+
+Route::get('/questions/add',[App\Http\Controllers\QuestionController::class,
+	'create'])->name('add_question')->middleware('auth');
+
+Route::post('/add_question_now',[App\Http\Controllers\QuestionController::class,
+	'store'])->name('add_question_now')->middleware('auth');
+
+
+
+Route::get('/questions/all',[App\Http\Controllers\QuestionController::class,
+	'all_questions'])->name('all_questions')->middleware('auth');
+
+Route::get('/about/us/input',[App\Http\Controllers\InfoController::class,
+	'about_us'])->name('aboutus_input')->middleware('auth');
+
+Route::post('/add_aboutus_now',[App\Http\Controllers\InfoController::class,
+	'add_aboutus_now'])->name('add_aboutus_now')->middleware('auth');
+
+
+Route::get('/mission/input',[App\Http\Controllers\InfoController::class,
+	'mission'])->name('mission_input')->middleware('auth');
+
+Route::post('/add_mission_now',[App\Http\Controllers\InfoController::class,
+	'add_mission_now'])->name('add_mission_now')->middleware('auth');
+
+
+
+
+Route::get('/vision/input',[App\Http\Controllers\InfoController::class,
+	'vision'])->name('vision_input')->middleware('auth');
+
+Route::post('/add_vision_now',[App\Http\Controllers\InfoController::class,
+	'add_vision_now'])->name('add_vision_now')->middleware('auth');
+
+
+Route::get('/contactus/input',[App\Http\Controllers\InfoController::class,
+	'contactus'])->name('contactus')->middleware('auth');
+
+Route::post('/contactus_input_now',[App\Http\Controllers\InfoController::class,
+	'contactus_input_now'])->name('contactus_input_now')->middleware('auth');
+
+Route::get('/results/input',[App\Http\Controllers\ResultController::class,
+	'create'])->name('result_create')->middleware('auth');
+
+Route::post('/add_exam_result_now',[App\Http\Controllers\ResultController::class,
+	'store'])->name('add_exam_result_now')->middleware('auth');
+
+Route::get('/results/all',[App\Http\Controllers\ResultController::class,
+	'show_all_results'])->name('show_all_results')->middleware('auth');
+
+
+Route::get('/result/details/{id}',[App\Http\Controllers\ResultController::class,
+	'result_details'])->name('result_details')->middleware('auth');
+
+
+
+Route::get('/feedback',[App\Http\Controllers\FeedbackController::class,
+	'feedback'])->name('feedback_all')->middleware('auth');

@@ -1,6 +1,6 @@
 @extends('layouts/contentNavbarLayout')
 
-@section('title', 'Create Company Categories ')
+@section('title', 'Create Company')
 
 @section('page-style')
 
@@ -19,7 +19,7 @@
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
   <span class="text-muted fw-light">Home -></span>
-   Payment -> Create Payment Schedule
+   Company -> Create 
   
 </h4>
 
@@ -42,10 +42,10 @@
   <!-- <h5 class="card-header">Bordered Table</h5> -->
   <div class="card-body">
     <div id="company_create_area" class_0="d-flex justify-content-center">
-      <div id="result" class="text-center"></div>
 
       <div><h4  class="text-center py-3">Create Companies</h4></div>
-      
+              <div id="result" class="text-center"></div>
+        
         <form method="POST" enctype="multipart/form-data" id="form_company_name" action="{{URL::to('/create-company-now')}}"  class="requires-validation g-3" novalidate  >
 
 
@@ -54,8 +54,8 @@
 
           <div class="row mb-3">
 
-            <div class="col-sm-4_00">
-              <label for="company_name" class="form-label  ">Company Name</label>
+            <div class="col-sm-4_00 form-group required">
+              <label for="company_name" class="form-label control-label ">Company Name</label>
               <input type="text" name="company_name" class="form-control" id="company_name" placeholder="Company  Name" value=""  required>
 
               <div class="invalid-feedback" id="company_name_error">
@@ -67,7 +67,7 @@
           </div>
 
 
-          <div class="row mb-3">
+          <!-- <div class="row mb-3">
             <div class="col-sm-4_00">
               <label for="logo" class="form-label"> Logo</label>
               <input type="file" name="logo" class="form-control" id="logo" placeholder=" Logo" value="" >
@@ -88,31 +88,19 @@
               
             </div>
 
-          </div>
+          </div> -->
+
+
 
 
 
 
           <div class="row mb-3">
-            <div class="col-sm-4_00">
-              <label for="description" class="form-label"> Company Category</label>
-              <select id="category_type"  name="category_type" class="form-control" autocomplete=off>
-                <option value="">Select a Company Type</option>
-                <?php 
-
-                  foreach($company_categories as $company_category_indiv){
-
-                    ?>
-
-                      <option value="<?php echo $company_category_indiv->id; ?>"><?php echo $company_category_indiv->category_name; ?></option>
-
-                    <?php
-
-                  }// end of foreach loop
-
-
-                ?>
-              </select>
+            <div class="col-sm-4_00 form-group required">
+              <label for="description" class="form-label  control-label"> Company Category</label>
+              <input type="text" id="category_type"  name="category_type" class="form-control" placeholder="Company Category"  />
+                
+              
               <div class="invalid-feedback" id="category_type_error"> </div>
               
             </div>
@@ -185,7 +173,7 @@ function readURL(input) {
   // prepare the form when the DOM is ready 
 $(document).ready(function() { 
 
-  $("#category_type").select2();
+  // $("#category_type").select2();
   // $(".preview_upload_indiv").imagefill();
 
   $('input[type="file"]').change(function(){

@@ -1,6 +1,6 @@
 @extends('layouts/contentNavbarLayout')
 
-@section('title', 'Calling')
+@section('title', 'All Candidates')
 
 @section('content')
 <h4 class="fw-bold py-3 mb-4">
@@ -126,15 +126,15 @@
             {data: 'passport_num', name: 'passport'},
 
             {data: 'phone', name: 'Mobile'},
-            {data: 'passport_date', name: 'passport_submission_date'},
+            {data: 'passport_submission_date_found', name: 'passport_submission_date'},
             {data: 'agent_name', name: 'agent_id'},
 
-            {data: 'nationality', name: 'nationality'},
+            {data: 'nationality_found', name: 'nationality'},
             {data: 'organization_category', name: 'organization_category'},
 
-            {data: 'company', name: 'company'},
+            {data: 'company_found', name: 'company'},
 
-            {data: 'country', name: 'country'},
+            {data: 'country_found', name: 'country'},
             
             
 

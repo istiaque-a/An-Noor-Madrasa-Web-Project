@@ -1,6 +1,6 @@
 @extends('layouts/blankLayout')
 
-@section('title', 'Register Basic - Pages')
+@section('title', 'Register  - ')
 
 @section('page-style')
 <!-- Page -->
@@ -23,7 +23,7 @@
             <a href="{{url('/')}}" class="app-brand-link gap-2">
               <!-- <span class="app-brand-logo demo">@include('_partials.macros',["width"=>25,"withbg"=>'#696cff'])</span> -->
               <span class="app-brand-logo demo"><img src="{{URL::to('/assets/img/logo.png')}}" alt="logo" /></span>
-              <span class="app-brand-text demo text-body fw-bolder">{{config('variables.templateName')}}</span>
+              <!-- <span class="app-brand-text demo text-body fw-bolder">{{config('variables.templateName')}}</span> -->
             </a>
           </div>
           <!-- /Logo -->
@@ -32,7 +32,7 @@
 
 
           @if(session()->has('message'))
-                    <div class="alert alert-success">
+                    <div class="text-success text-center">
                         {{ session()->get('message') }}
                     </div>
             @endif
@@ -96,9 +96,26 @@
               <!-- <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email"> -->
 
 
-            <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="Email">
+            <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required_000 autocomplete="email" placeholder="Email">
 
             @error('email')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+
+
+            </div>
+
+
+            <div class="mb-3">
+              <label for="mobile" class="form-label">Mobile</label>
+              <!-- <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email"> -->
+
+
+            <input id="mobile" type="mobile" class="form-control @error('mobile') is-invalid @enderror" name="mobile" value="{{ old('mobile') }}" required autocomplete="mobile" placeholder="Mobile Number">
+
+            @error('mobile')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
                 </span>

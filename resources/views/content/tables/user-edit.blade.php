@@ -29,6 +29,11 @@
           font-weight: bold;
           font-size: 20px;
 }
+.delete_doc_link_wrapper{
+
+  margin-top: 5px !important;
+
+}
 </style>
 
 
@@ -75,7 +80,7 @@
   $country="";
   $state_province="";
   $zip="";
-  $phone="";
+  $phone=$guardian_phone=$spouse_sibling_phone=$overseas_phone="";
   $organization_category="";
   $company="";
   $medical_centre="";
@@ -86,6 +91,7 @@
   $passport_size_photo="";
   $nid_photo="";
   $passport_photo="";
+  $passport_submission_date="";
   $medical_photo="";
   $calling_photo="";
   $visa_photo="";
@@ -95,14 +101,20 @@
   $calling_visa_ok=0;
   $flight_ok=0;
 
+  $division_id=$district_id=$thana_id=$postal_code="";
+
+  $approach_mode="";
+
+  $agent_id="";
 
   $dob_year=$dob_month=$dob_day="";
   $passport_expiry_date_year=$passport_expiry_date_month = $passport_expiry_date_day="";
   $medical_date_year = $medical_date_month = $medical_date_day="";
   $departure_date_year = $departure_date_month = $departure_date_day="";
   $esd_to_reach_year= $esd_to_reach_month=$esd_to_reach_day="";
+  $passport_submission_date_day=$passport_submission_date_month = $passport_submission_date_year="";
 
-
+  $user_id_found=request()->segment(count(request()->segments())) ; 
 
   if(gettype($user)!=trim('string')){
      
@@ -127,10 +139,13 @@
      $nationality= $user->nationality;
      $passport_no= $user->passport_num ;
      $passport_expiry_date = $user->passport_expiry_date;
+     $passport_submission_date = $user->passport_submission_date;
      $medical_condition = $user->medical_condition;
      $medical_ok = $user->medical_ok;
      $calling_visa_ok= $user->calling_visa_ok;
      $flight_ok = $user->flight_ok;
+     $approach_mode=$user->approach_mode;
+     $agent_id= $user->agent_id;
 
      if($passport_expiry_date){
 
@@ -142,20 +157,43 @@
 
      }
 
+     if($passport_submission_date){
+
+      $passport_submission_date_array= explode('-',$passport_submission_date);
+      $passport_submission_date_year=$passport_submission_date_array[0];
+      $passport_submission_date_month = $passport_submission_date_array[1];
+      $passport_submission_date_day = $passport_submission_date_array[2];
+
+     }
+
      $nid_number= $user->nid_num;
      $marital_status= $user->marital_status;
      $gender= $user->gender;
      $address= $user->address;
      $city = $user->city;
      $country = $user->country;
+     $division_id= $user->division_id;
+     $district_id = $user->district_id;
+     $thana_id = $user->thana_id;
+     $postal_code = $user->postal_code;
      $state_province= $user->state_province;
      $zip= $user->zip;
+
+
      $email= $user->email;
      $phone = $user->phone;
+     $guardian_phone=$user->guardian_phone;
+     $spouse_sibling_phone=$user->spouse_sibling_phone;
+     $overseas_phone=$user->overseas_phone;
+     
      $organization_category= $user->organization_category;
      $company = $user->company;
      $medical_centre = $user->medical_center;
      $medical_date = $user->medical_date;
+
+
+
+
 
      if($medical_date){
 
@@ -219,7 +257,7 @@
           <div class="row mb-3">
 
             <div class="col-sm-4 form-group required">
-              <label for="first_name" class="form-label control-label">First Name11</label>
+              <label for="first_name" class="form-label control-label">First Name</label>
               <input type="text" name="first_name" class="form-control" id="first_name" placeholder="First Name" value="{{$first_name}}"  required>
 
               <div class="invalid-feedback" id="first_name_error">
@@ -230,7 +268,7 @@
 
 
 
-            <div class="col-sm-4">
+            <div class="col-sm-4 ">
               <label for="middle_name" class="form-label">Middle Name</label>
               <input type="text" name="middle_name" class="form-control" id="middle_name" placeholder="Middle Name" value="{{$middle_name}}" >
 
@@ -252,8 +290,8 @@
 
           <div class="row mb-3 gy-4">
             
-            <div class="col-sm-3">
-              <label for="date_of_birth" class="form-label">Date of Birth</label>
+            <div class="col-sm-3 form-group required">
+              <label for="date_of_birth" class="form-label  control-label">Date of Birth</label>
               <input type="text" name="date_of_birth" class="form-control" id="date_of_birth" placeholder="Date of Birth" value="" readonly >
 
               <div class="invalid-feedback" id="date_of_birth_error">
@@ -316,7 +354,7 @@
 
 
             <div class="col-sm-3 ">
-              <label for="nationality" class="form-label">Nnationality</label>
+              <label for="nationality" class="form-label">Nationality</label>
               <!-- <input type="text" name="nationality" id="nationality" class="form-control" placeholder="Nationality" value="{{$nationality}}"> -->
 
 
@@ -376,8 +414,8 @@
 
 
           <div class="col-sm-3">
-              <label for="passport_submission_date" class="form-label">Passport Submission  Date</label>
-              <input type="text" name="passport_submission_date" id="passport_submission_date" class="form-control" placeholder="Passport Submission  Date" value="">
+              <label for="passport_submission_date" class="form-label">Passport Receiving  Date</label>
+              <input type="text" name="passport_submission_date" id="passport_submission_date" class="form-control" placeholder="Passport Submission  Date" value="" readonly>
 
               <div class="invalid-feedback" id="nid_number_error">Passport Submission Date is necessary</div>
               
@@ -458,9 +496,11 @@
               <?php
 
                 foreach($divisions as $division_indiv){
+
+                          //$division_id_now = $division_indiv->id               
                   ?>
 
-                  <option value="<?php  echo $division_indiv->id; ?>"><?php echo $division_indiv->name; ?></option>
+                  <option   value="<?php  echo $division_indiv->id; ?>"><?php echo $division_indiv->name; ?></option>
 
 
                   <?php
@@ -515,7 +555,7 @@
           <div class="col-sm-2">
             <label for="post_code"  class="form-label">Postal Code</label>
 
-            <input type="text" id="post_code" name="post_code" class="form-control" placeholder="Postal Code" value="" />
+            <input type="text" id="post_code" name="post_code" class="form-control" placeholder="Postal Code" value="{{$postal_code}}" />
 
             <div class="invalid-feedback" id="post_code_error">Postal Code is necessary</div>
             
@@ -546,8 +586,8 @@
         
         <div class="row mb-3 gy-3">
 
-          <div class="col-sm-4">
-            <label for="country"  class="form-label">COUNTRY</label>
+          <div class="col-sm-3">
+            <label for="country"  class="form-label">DESTINATION COUNTRY</label>
             <!-- <input type="text" name="country" id="country" class="form-control" value="{{$country}}" placeholder="Country"> -->
 
 
@@ -573,7 +613,7 @@
             <div class="invalid-feedback" id="country_error">Country is necessary</div>
           </div>
 
-          <div class="col-sm-4">
+          <div class="col-sm-2">
             <label class="form-label" for="state_province">STATE/PROVINCE</label>
             <input type="text" name="state_province" class="form-control" id="state_province" value="{{$state_province}}" placeholder="State/Province">
 
@@ -583,40 +623,72 @@
 
 
 
-          <div class="col-sm-4">
+          <div class="col-sm-2">
             <label class="form-label" for="zip">Zip Code</label>
-            <input type="text" name="zip" id="zip" class="form-control" value="" placeholder="Zip Code" value="{{$zip}}">
+            <input type="text" name="zip" id="zip" class="form-control"  placeholder="Zip Code" value="{{$zip}}">
             <div class="invalid-feedback" id="zip_error">ZIP is necessary</div>
+          </div>
+
+
+
+          <div class="col-sm-5">
+            <label for="email"  class="form-label">EMAIL</label>
+            <input type="text"  name="email" id="email" class="form-control" value="{{$email}}" placeholder="Email">
+            <div class="invalid-feedback" id="email_error">A valid and unique email is necessary</div>
           </div>
           
         </div><!-- end of class row -->
 
 
 
-        <div class="row  mb-3 gy-3">
 
-          <div class="col-sm-4">
-            <label for="email"  class="form-label">EMAIL</label>
-            <input type="text" readonly name="email" id="email" class="form-control" value="{{$email}}" placeholder="Email">
-            <div class="invalid-feedback" id="email_error">A valid and unique email is necessary</div>
-          </div>
+          <div class="row  mb-3 gy-3">
 
-          <div class="col-sm-4">
-            <label class="form-label" for="phone">PHONE</label>
-            <input type="text" name="phone" class="form-control" id="phone" value="" placeholder="Phone">
+          
+
+          <div class="col-sm-3">
+            <label class="form-label" for="phone">Candiate's PHONE</label>
+            <input type="text" name="phone" class="form-control" id="phone" value="{{$phone}}" placeholder="Phone">
             <div class="invalid-feedback" id="phone_error">Phone number is necessary</div>
             
           </div>
 
 
 
-          <div class="col-sm-4">
-                <label for="organization_category"  class="form-label">Organization Category</label>
-                <input type="text" name="organization_category" id="organization_category" class="form-control" value="{{$organization_category}}" placeholder="Organization Category">
-                <div class="invalid-feedback" id="organization_category_error"></div>
-          </div>
-          
+        <div class="col-sm-3">
+            <label class="form-label" for="guardian_phone">Guardian's PHONE</label>
+            <input type="text" name="guardian_phone" class="form-control" id="guardian_phone" value="{{$guardian_phone}}" placeholder="Guardian's Phone">
+            <div class="invalid-feedback" id="guardian_phone_error">Guardian's phone number is necessary</div>
+            
+        </div>          
+
+
+
+
+
+        <div class="col-sm-3">
+            <label class="form-label" for="spouse_sibling_phone">Spouse / Sibling's PHONE</label>
+            <input type="text" name="spouse_sibling_phone" class="form-control" id="spouse_sibling_phone" 
+            value="{{$spouse_sibling_phone}}" placeholder="Spouse / Sibling's Phone">
+            <div class="invalid-feedback" id="spouse_sibling_phone_error">Spouse/Sibling's phone number is necessary</div>
+            
+        </div>          
+
+
+
+
+        <div class="col-sm-3">
+            <label class="form-label" for="overseas_phone">overseas PHONE</label>
+            <input type="text" name="overseas_phone" class="form-control" id="overseas_phone" value="{{$overseas_phone}}" placeholder="Overseas Phone">
+            <div class="invalid-feedback" id="overseas_phone_error">Overseas phone number is necessary</div>
+            
+        </div>          
+
+
         </div><!-- end of class row -->
+
+
+
 
 
 
@@ -628,7 +700,7 @@
 
           <div class="col-sm-3">
             <label class="form-label" for="company">Company</label>
-            <!-- <input type="text" name="company" class="form-control" id="company" value="{{$company}}" placeholder="Company"> -->
+            
 
 
             <select class="form-select_000 form-control" name="company" id="company"  autocomplete=off>
@@ -639,7 +711,7 @@
                             ?>
 
                             <option <?php if($company_indiv->id == $company){ echo 'selected="selected"';}  ?> value="<?php echo $company_indiv->id; ?>">
-                              <?php echo $company_indiv->company_name;  ?></option>
+                              <?php echo $company_indiv->company_name;  ?> (<?php echo $company_indiv->company_type; ?>)</option>
 
                             <?php
 
@@ -653,8 +725,14 @@
           </div>
 
 
+          <div class="col-sm-2">
+                <label for="organization_category"  class="form-label">Organization Category</label>
+                <input type="text" name="organization_category" id="organization_category" class="form-control" value="{{$organization_category}}" placeholder="Organization Category">
+                <div class="invalid-feedback" id="organization_category_error"></div>
+          </div>
+          
 
-          <div class="col-sm-3">
+          <div class="col-sm-2">
             <label class="form-label" for="medical_centre">Medical Center</label>
             <input type="text" name="medical_centre" class="form-control" id="medical_centre" value="{{$medical_centre}}" placeholder="Medical Centre">
             <div class="invalid-feedback" id="medical_centre_error"></div>
@@ -663,7 +741,7 @@
 
 
 
-          <div class="col-sm-3">
+          <div class="col-sm-2">
             <label class="form-label" for="medical_date">Medical Date</label>
             <input type="text" name="medical_date" class="form-control" id="medical_date" value="" placeholder="Medical Date" readonly>
             <div class="invalid-feedback" id="medical_date_error"></div>
@@ -672,7 +750,7 @@
 
 
 
-            <div class="col-sm-3">
+            <div class="col-sm-2">
 
              <label  class="form-label">Medical Condition</label>
 
@@ -685,6 +763,14 @@
                   <input class="form-check-input" type="radio" name="medical_condition" id="medical_condition_unfit" value="0"  <?php if($medical_condition==0){ echo 'checked'; } ?>>
                   <label class="form-label" for="marital_status2">
                   Unfit
+                  </label>
+                </div>
+
+
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="medical_condition" id="medical_condition_unfit" value=""  <?php if($medical_condition==null){ echo 'checked'; } ?>>
+                  <label class="form-label" for="marital_status2">
+                  UnKnown
                   </label>
                 </div>
 
@@ -775,9 +861,103 @@
 
         </div>
 
+
+
+
+        <div class="row  mb-3 gy-3">
+
+          <div class="col-sm-2">
+
+             <label  class="form-label">Approach</label>
+
+                <div class="form-check">
+                    <input class="form-check-input approach_mode" type="radio" name="approach_mode" id="approach_mode_direct" <?php if($approach_mode==1){echo 'checked';}  ?> value="1" >
+                    <label class="form-label" for="approach_mode_direct">Direct</label>
+                </div>
+                
+                <div class="form-check">
+                  <input class="form-check-input approach_mode" type="radio" name="approach_mode" id="approach_mode_via_agent" value="2" <?php if($approach_mode==2){ echo 'checked';}  ?> >
+                  <label class="form-label" for="approach_mode_via_agent">
+                  Via Agent
+                  </label>
+                </div>
+
+                <div class="invalid-feedback" id="marital_status_error">Marital status is necessary</div>
+
+
+            </div>
+
+
+
+            <div class="col-sm-3">
+
+             <label  class="form-label">Agents</label>
+
+                <select class="form-select_000 form-control" name="agent" id="agent" disabled autocomplete=off>
+                      <option value="" selected>Select an Agent</option>
+                      <?php
+
+                          foreach($agents as $agent_indiv){
+                            ?>
+
+                            <option <?php if($agent_id== $agent_indiv->id){ echo 'selected="selected"';}  ?> value="<?php echo $agent_indiv->id; ?>">
+                              <?php echo $agent_indiv->first_name.' '.$agent_indiv->middle_name.' '.$agent_indiv->last_name;  ?></option>
+
+                            <?php
+
+
+                          }// end of foreach loop
+
+                      ?>
+                </select>
+                
+                
+                <div class="invalid-feedback" id="marital_status_error">Agent  is necessary</div>
+
+
+            </div>
+
+
+            <div class="col-sm-2">
+
+            <!-- <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="passport_returned" 
+                    id="passport_returned"  >
+                    <label class="form-label" for="marital_status">Passport Returned</label>
+                </div> -->
+
+
+                <label  class="form-label">Rejection</label>
+                <br/>
+
+                <input type="checkbox" id="passport_returned" name="passport_returned" class="form-control_000 form-check-input">  
+
+                <label  class="form-label">Passport Returned</label>
+                
+            </div>
+
+
+
+            <div class="col-sm-5">
+
+             <label  class="form-label" for="passport_returned_explanation">Passport Returned Explanation</label>
+
+                <textarea readonly class="form-select_000 form-control" name="passport_returned_explanation" id="passport_returned_explanation"></textarea> 
+                
+                
+                <div class="invalid-feedback" id="passport_returned_explanation_status_error">Explanation is necessary</div>
+
+
+            </div>
+
+
+            
+
+        </div>
+
   
 
-        <input type="text" value="<?php echo request()->segment(count(request()->segments())) ?>"  name="user_id">
+        <input type="text" value="<?php echo $user_id_found; ?>"  name="user_id">
 
 
         <div class="mb-4">Documentation</div>
@@ -788,9 +968,46 @@
            
           <div id="user_existing_photo">
 
-            <img src="{{URL::to('/thumbnails/passport_size_photo/'.$user->passport_size_photo)}}" alt="passport size photo" />
+            <div id="user_existing_photo_inner">
+              
+             <?php 
+
+             $default_image=URL::to('/assets/img/avatars/1.png');
+             
+             ?> 
+            <img src="{{URL::to('/thumbnails/passport_size_photo/'.$user->passport_size_photo)}}" alt="passport size photo" onerror="this.onerror=null; this.src='<?php echo $default_image; ?>'" />
+
+
+            </div><!-- end of id user_existing_photo_inner -->
+
+            
             
           </div><!-- end of id user_existing_photo -->
+          <div class="result_delete_passport"></div>
+
+          <div class="text-start delete_doc_link_wrapper mb-2">
+            <?php
+
+            if($user->passport_size_photo){
+                  
+                  $passport_size_photo_hide=0;
+
+            }else{
+
+              $passport_size_photo_hide=1;
+
+            }
+
+            // exit;
+
+            ?>
+
+
+                      <a  style="<?php if($passport_size_photo_hide){ echo 'display: none'; } ?>" class="delete_passport_photo_link" data-user_id="<?php echo $user_id_found; ?>" style="text-decoration: none;" href="javascript:void(0)">Delete</a>
+
+             
+                      
+                </div>
 
           <div class="custom-file mb-3">
             <input type="file" class="custom-file-input" id="passport_size_photo" name="passport_size_photo">
@@ -922,6 +1139,8 @@
               $description = $doc_indiv->description;
               $doc_category=$doc_indiv->doc_category;
 
+              $doc_id = $doc_indiv->id;
+
 
                 if($doc_category==2){ // from DB column
 
@@ -935,7 +1154,7 @@
 
 
 
-              <div class="personal_details_doc_indiv_wrapper float-start">
+              <div class="personal_details_doc_indiv_wrapper personal_details_doc_indiv_wrapper_<?php echo $doc_id; ?> float-start">
 
                 <div class="personal_details_doc_indiv">
 
@@ -947,7 +1166,12 @@
                   
                 </div><!-- end of class personal_details_doc_indiv -->
 
-                <div class="description text-center">{{$description}}</div>
+                <div class="description text-center">{{$description}}&nbsp;</div>
+
+                <div class="text-center delete_doc_link_wrapper">
+                      <a class="delete_doc_link" data-id="<?php echo $doc_id; ?>" style="text-decoration: none;" href="javascript:void(0)">Delete</a>
+                      <div class="result_delete_<?php echo $doc_id; ?>"></div>
+                </div>
                 
               </div><!--end of class personal_details_doc_indiv_wrapper -->
 
@@ -961,7 +1185,7 @@
 
 
 
-              <div class="personal_details_doc_indiv_wrapper float-start">
+              <div class="personal_details_doc_indiv_wrapper personal_details_doc_indiv_wrapper_<?php echo $doc_id; ?> float-start">
 
                 <div class="personal_details_doc_indiv">
 
@@ -975,6 +1199,11 @@
                 </div><!-- end of class personal_details_doc_indiv -->
 
                 <div class="description text-center">{{$description}}</div>
+
+                <div class="text-center delete_doc_link_wrapper">
+                      <a class="delete_doc_link" data-id="<?php echo $doc_id; ?>" style="text-decoration: none;" href="javascript:void(0)">Delete</a>
+                      <div class="result_delete_<?php echo $doc_id; ?>"></div>
+                </div>
                 
               </div><!--end of class personal_details_doc_indiv_wrapper -->
 
@@ -1076,6 +1305,8 @@
               $description = $doc_indiv->description;
               $doc_category=$doc_indiv->doc_category;
 
+              $doc_id=$doc_indiv->id;
+
 
                 if($doc_category==6){ // from DB column
 
@@ -1089,7 +1320,7 @@
 
 
 
-              <div class="personal_details_doc_indiv_wrapper float-start">
+              <div class="personal_details_doc_indiv_wrapper  personal_details_doc_indiv_wrapper_<?php echo $doc_id; ?> float-start">
 
                 <div class="personal_details_doc_indiv">
 
@@ -1102,6 +1333,12 @@
                 </div><!-- end of class personal_details_doc_indiv -->
 
                 <div class="description text-center">{{$description}}</div>
+
+
+                <div class="text-center">
+                      <a class="delete_doc_link" data-id="<?php echo $doc_id; ?>" style="text-decoration: none;" href="javascript:void(0)">Delete</a>
+                      <div class="result_delete_<?php echo $doc_id; ?>"></div>
+                </div>
                 
               </div><!--end of class personal_details_doc_indiv_wrapper -->
 
@@ -1115,7 +1352,7 @@
 
 
 
-              <div class="personal_details_doc_indiv_wrapper float-start">
+              <div class="personal_details_doc_indiv_wrapper  personal_details_doc_indiv_wrapper_<?php echo $doc_id; ?> float-start">
 
                 <div class="personal_details_doc_indiv">
 
@@ -1129,6 +1366,11 @@
                 </div><!-- end of class personal_details_doc_indiv -->
 
                 <div class="description text-center">{{$description}}</div>
+
+                <div class="text-center">
+                      <a class="delete_doc_link" data-id="<?php echo $doc_id; ?>" style="text-decoration: none;" href="javascript:void(0)">Delete</a>
+                      <div class="result_delete_<?php echo $doc_id; ?>"></div>
+                </div>
                 
               </div><!--end of class personal_details_doc_indiv_wrapper -->
 
@@ -1233,6 +1475,7 @@
 
               $description = $doc_indiv->description;
               $doc_category=$doc_indiv->doc_category;
+              $doc_id= $doc_indiv->id;
 
 
                 if($doc_category==5){ // from DB column 5=> Medical Photo
@@ -1247,9 +1490,9 @@
 
 
 
-              <div class="personal_details_doc_indiv_wrapper float-start">
+              <div class="personal_details_doc_indiv_wrapper  personal_details_doc_indiv_wrapper_<?php echo $doc_id; ?> float-start">
 
-                <div class="personal_details_doc_indiv">
+                <div class="personal_details_doc_indiv" >
 
 
                   <a href="{{URL::to('/uploads/medical_photo/'.$large_image )}}" data-fancybox="images" data-caption="<?php echo $description; ?>">
@@ -1260,6 +1503,10 @@
                 </div><!-- end of class personal_details_doc_indiv -->
 
                 <div class="description text-center">{{$description}}</div>
+                <div class="text-center">
+                      <a class="delete_doc_link" data-id="<?php echo $doc_id; ?>" style="text-decoration: none;" href="javascript:void(0)">Delete</a>
+                      <div class="result_delete_<?php echo $doc_id; ?>"></div>
+                </div>
                 
               </div><!--end of class personal_details_doc_indiv_wrapper -->
 
@@ -1273,7 +1520,7 @@
 
 
 
-              <div class="personal_details_doc_indiv_wrapper float-start">
+              <div class="personal_details_doc_indiv_wrapper  personal_details_doc_indiv_wrapper_<?php echo $doc_id ?> float-start">
 
                 <div class="personal_details_doc_indiv">
 
@@ -1287,6 +1534,11 @@
                 </div><!-- end of class personal_details_doc_indiv -->
 
                 <div class="description text-center">{{$description}}</div>
+
+                <div class="text-center">
+                      <a class="delete_doc_link" data-id="<?php echo $doc_id; ?>" style="text-decoration: none;" href="javascript:void(0)">Delete</a>
+                      <div class="result_delete_<?php echo $doc_id; ?>"></div>
+                </div>
                 
               </div><!--end of class personal_details_doc_indiv_wrapper -->
 
@@ -1388,6 +1640,8 @@
               $description = $doc_indiv->description;
               $doc_category=$doc_indiv->doc_category;
 
+              $doc_id = $doc_indiv->id;
+
 
                 if($doc_category==3){ // from DB column 3=> Medical Photo
 
@@ -1401,7 +1655,7 @@
 
 
 
-              <div class="personal_details_doc_indiv_wrapper float-start">
+              <div class="personal_details_doc_indiv_wrapper personal_details_doc_indiv_wrapper_<?php echo $doc_id; ?> float-start">
 
                 <div class="personal_details_doc_indiv">
 
@@ -1414,6 +1668,12 @@
                 </div><!-- end of class personal_details_doc_indiv -->
 
                 <div class="description text-center">{{$description}}</div>
+
+
+                <div class="text-center">
+                      <a class="delete_doc_link" data-id="<?php echo $doc_id; ?>" style="text-decoration: none;" href="javascript:void(0)">Delete</a>
+                      <div class="result_delete_<?php echo $doc_id; ?>"></div>
+                </div>
                 
               </div><!--end of class personal_details_doc_indiv_wrapper -->
 
@@ -1427,7 +1687,7 @@
 
 
 
-              <div class="personal_details_doc_indiv_wrapper float-start">
+              <div class="personal_details_doc_indiv_wrapper personal_details_doc_indiv_wrapper_<?php echo $doc_id; ?> float-start">
 
                 <div class="personal_details_doc_indiv">
 
@@ -1441,6 +1701,11 @@
                 </div><!-- end of class personal_details_doc_indiv -->
 
                 <div class="description text-center">{{$description}}</div>
+
+                <div class="text-center">
+                      <a class="delete_doc_link" data-id="<?php echo $doc_id; ?>" style="text-decoration: none;" href="javascript:void(0)">Delete</a>
+                      <div class="result_delete_<?php echo $doc_id; ?>"></div>
+                </div>
                 
               </div><!--end of class personal_details_doc_indiv_wrapper -->
 
@@ -1539,6 +1804,8 @@
               $description = $doc_indiv->description;
               $doc_category=$doc_indiv->doc_category;
 
+              $doc_id = $doc_indiv->id;
+
 
                 if($doc_category==7){ // from DB column 7=> Medical Photo
 
@@ -1552,7 +1819,7 @@
 
 
 
-              <div class="personal_details_doc_indiv_wrapper float-start">
+              <div class="personal_details_doc_indiv_wrapper   personal_details_doc_indiv_wrapper_<?php echo $doc_id; ?> float-start">
 
                 <div class="personal_details_doc_indiv">
 
@@ -1565,6 +1832,12 @@
                 </div><!-- end of class personal_details_doc_indiv -->
 
                 <div class="description text-center">{{$description}}</div>
+
+
+                <div class="text-center">
+                      <a class="delete_doc_link" data-id="<?php echo $doc_id; ?>" style="text-decoration: none;" href="javascript:void(0)">Delete</a>
+                      <div class="result_delete_<?php echo $doc_id; ?>"></div>
+                </div>
                 
               </div><!--end of class personal_details_doc_indiv_wrapper -->
 
@@ -1578,7 +1851,7 @@
 
 
 
-              <div class="personal_details_doc_indiv_wrapper float-start">
+              <div class="personal_details_doc_indiv_wrapper personal_details_doc_indiv_wrapper_<?php echo $doc_id; ?> float-start">
 
                 <div class="personal_details_doc_indiv">
 
@@ -1592,6 +1865,12 @@
                 </div><!-- end of class personal_details_doc_indiv -->
 
                 <div class="description text-center">{{$description}}</div>
+
+
+                <div class="text-center">
+                      <a class="delete_doc_link" data-id="<?php echo $doc_id; ?>" style="text-decoration: none;" href="javascript:void(0)">Delete</a>
+                      <div class="result_delete_<?php echo $doc_id; ?>"></div>
+                </div>
                 
               </div><!--end of class personal_details_doc_indiv_wrapper -->
 
@@ -1699,6 +1978,10 @@
               $description = $doc_indiv->description;
               $doc_category=$doc_indiv->doc_category;
 
+              $doc_id = $doc_indiv->id;
+
+
+
 
                 if($doc_category==4){ // from DB column 4=> Medical Photo
 
@@ -1712,7 +1995,7 @@
 
 
 
-              <div class="personal_details_doc_indiv_wrapper float-start">
+              <div class="personal_details_doc_indiv_wrapper personal_details_doc_indiv_wrapper_<?php echo $doc_id; ?> float-start">
 
                 <div class="personal_details_doc_indiv">
 
@@ -1725,6 +2008,12 @@
                 </div><!-- end of class personal_details_doc_indiv -->
 
                 <div class="description text-center">{{$description}}</div>
+
+
+                <div class="text-center">
+                      <a class="delete_doc_link" data-id="<?php echo $doc_id; ?>" style="text-decoration: none;" href="javascript:void(0)">Delete</a>
+                      <div class="result_delete_<?php echo $doc_id; ?>"></div>
+                </div>
                 
               </div><!--end of class personal_details_doc_indiv_wrapper -->
 
@@ -1738,7 +2027,7 @@
 
 
 
-              <div class="personal_details_doc_indiv_wrapper float-start">
+              <div class="personal_details_doc_indiv_wrapper personal_details_doc_indiv_wrapper_<?php echo $doc_id; ?> float-start">
 
                 <div class="personal_details_doc_indiv">
 
@@ -1752,6 +2041,11 @@
                 </div><!-- end of class personal_details_doc_indiv -->
 
                 <div class="description text-center">{{$description}}</div>
+
+                <div class="text-center">
+                      <a class="delete_doc_link" data-id="<?php echo $doc_id; ?>" style="text-decoration: none;" href="javascript:void(0)">Delete</a>
+                      <div class="result_delete_<?php echo $doc_id; ?>"></div>
+                </div>
                 
               </div><!--end of class personal_details_doc_indiv_wrapper -->
 
@@ -1864,6 +2158,8 @@
       }
     });
 
+    token_value=$('meta[name="csrf-token"]').attr('content').trim();
+
     upload_counter=0;
 
 
@@ -1926,7 +2222,17 @@
     }// end of function readUrl
 
 
+/*window.onLoad=function(){
 
+  setTimeout(function(){
+
+    var division_id = '<?php //echo $division_id; ?>';
+      alert(" 000division_id = "+ division_id);
+      $("#division").val(division_id).trigger('change');
+
+  },3000);
+
+}*/;
 
   // prepare the form when the DOM is ready 
 $(document).ready(function() { 
@@ -1937,10 +2243,165 @@ $(document).ready(function() {
                     autoclose:true
                   
                 });
+/*var division_id = '<?php echo $division_id; ?>';
 
-$("#division").val('').change();
+alert(" division_id = "+ division_id);
+$("#division").val(division_id).trigger('change');*/
 
-$("#agent,#country,#nationality,#countryOfCitizenship,#division,#district,#thana").select2();
+// $("division")
+
+
+
+setTimeout(function(){
+
+    var division_id = '<?php echo $division_id; ?>';
+      // alert(" 9999000  division_id = "+ division_id);
+      // alert("division_id = "+ division_id);
+      if(division_id==0){
+        division_id="";
+
+      }
+      $("#division").val(division_id).trigger('change');
+
+  },300);
+
+
+$("#passport_size_photo").val('');
+$("#agent,#country,#nationality,#countryOfCitizenship,#division,#district,#thana,#company").select2();
+
+
+    $(".delete_passport_photo_link").click(function(){
+
+        var $this = $(this);
+        var user_id =$this.attr('data-user_id').trim();
+
+        $(".result_delete_passport").html('<span class"wait">Please wait...</span>');
+
+        $.ajax({
+
+            url:"{{URL::to('/delete_passport_photo_now')}}",
+            method:"POST",
+            data:{'user_id':user_id,_token:token_value},
+            success: function(data, status, xhr){
+
+              if(window.console){
+
+                console.log("data : ");
+                console.log(data);
+
+              }
+
+              if(data.success){
+
+                $(".result_delete_passport").html('<span class"wait">Successfully deleted</span>').html('');;      
+                //$(".personal_details_doc_indiv_wrapper_"+doc_id).remove();
+                $("#user_existing_photo_inner").remove();
+
+                $(".delete_passport_photo_link").hide();
+              }
+               
+                
+
+            },
+            error: function(jqXhr, textStatus, errorMessage){
+
+              alert(textStatus);
+
+              if(window.console){
+
+                console.log("Doc delete error found : ");
+
+                console.log(errorMessage);
+
+              }
+
+            }
+
+        });
+
+
+    });
+
+    $(".delete_doc_link").click(function(){
+        var $this = $(this);
+        var doc_id =$this.attr('data-id').trim();
+
+        $(".result_delete_"+doc_id).html('<span class"wait">Please wait...</span>');
+
+        $.ajax({
+
+            url:"{{URL::to('/delete_thedoc_now')}}",
+            method:"POST",
+            data:{'doc_id':doc_id,'_token':token_value},
+            success: function(data, status, xhr){
+
+              if(window.console){
+
+                console.log("data : ");
+                console.log(data);
+
+              }
+
+              if(data.success){
+
+                $(".result_delete_"+doc_id).html('<span class"wait">Successfully deleted</span>');      
+                $(".personal_details_doc_indiv_wrapper_"+doc_id).remove();
+              }
+               
+                
+
+            },
+            error: function(jqXhr, textStatus, errorMessage){
+
+              alert(textStatus);
+
+              if(window.console){
+
+                console.log("Doc delete error found : ");
+
+                console.log(errorMessage);
+
+              }
+
+            }
+
+        });
+
+    });
+    $("#passport_returned").click(function(){
+
+        var $cb =$(this);
+        if($cb.is(':checked')){
+
+          $("#passport_returned_explanation").removeAttr('readonly');
+
+        }else{
+
+            $("#passport_returned_explanation").attr('readonly', true);
+
+
+        }
+
+    });
+
+    $(".approach_mode").click(function(){
+
+        var $approach_mode= $(this);
+
+        var approach_mode_found=$approach_mode.val();
+
+        if(approach_mode_found==1){
+
+          $("#agent").attr('disabled', true);
+
+        }else if(approach_mode_found==2){
+              
+              $("#agent").removeAttr('disabled');
+
+
+        }
+
+    });
 
     $('input[type="file"]').change(function(){
 
@@ -1969,7 +2430,9 @@ $("#agent,#country,#nationality,#countryOfCitizenship,#division,#district,#thana
         $("#thana").find('option').not(':first').remove();
         var $division = $(this);
 
-        var division_id = $division.val().trim();
+        var division_id = $division.val();
+
+        // alert(" division_id = "+division_id);
 
         $.ajax({
             method:"POST",
@@ -2001,6 +2464,17 @@ $("#agent,#country,#nationality,#countryOfCitizenship,#division,#district,#thana
               $("#district").find('option').not(':first').remove();
               $("#district").append(options).fadeOut(1000).fadeIn(9999999);
 
+              var district_id = '<?php echo $district_id; ?>';
+
+              // alert(" district_id = "+ district_id);
+
+              if(district_id==0){
+                district_id="".trim();
+
+              }
+
+              $("#district").val(district_id).trigger('change');
+
             },
             error: function(jqXhr, textStatus, errorMessage){
 
@@ -2019,7 +2493,7 @@ $("#agent,#country,#nationality,#countryOfCitizenship,#division,#district,#thana
 
         var $district = $(this);
 
-        var district_id = $district.val().trim();
+        var district_id = $district.val();
 
         $.ajax({
             method:"POST",
@@ -2050,6 +2524,9 @@ $("#agent,#country,#nationality,#countryOfCitizenship,#division,#district,#thana
 
               $("#thana").find('option').not(':first').remove();
               $("#thana").append(options).fadeOut(1000).fadeIn(9999999);
+
+              var thana_id = '<?php echo $thana_id; ?>';
+              $("#thana").val(thana_id);
 
             },
             error: function(jqXhr, textStatus, errorMessage){
@@ -2095,6 +2572,22 @@ $("#agent,#country,#nationality,#countryOfCitizenship,#division,#district,#thana
 
 
 
+    var passport_submission_date_found ='<?php echo  $passport_submission_date; ?>';
+    if(passport_submission_date_found){
+
+      var passport_submission_date_year='<?php echo $passport_submission_date_year; ?>';
+      var passport_submission_date_month ='<?php echo $passport_submission_date_month; ?>';
+      var passport_submission_date_day = '<?php echo $passport_submission_date_day; ?>';
+
+      var passport_submission_date = new Date(passport_submission_date_year+'-'+passport_submission_date_month+'-'+passport_submission_date_day);
+
+      $("#passport_submission_date").datepicker('update', passport_submission_date);
+
+    }
+
+
+
+
     var medical_date_found ='<?php echo  $medical_date; ?>';
     if(medical_date_found){
 
@@ -2104,7 +2597,7 @@ $("#agent,#country,#nationality,#countryOfCitizenship,#division,#district,#thana
 
       // var medical_date = new Date(medical_date_year, medical_date_month, medical_date_day);
       var medical_date = new Date( medical_date_year+'-'+medical_date_month+'-'+medical_date_day);
-
+      
       $("#medical_date").datepicker('update', medical_date);
 
     }
@@ -2182,7 +2675,7 @@ $("#agent,#country,#nationality,#countryOfCitizenship,#division,#district,#thana
 
 /*
 var extraObj_passport_size_photo = $("#fileuploader_passport_size_photo").uploadFile({
-        url:'{{URL::to("/doc/upload_now")}}',
+        url:'{{URL::to("/doc/my_upload_now")}}',
         fileName:"files",
 
         sequential:true,
@@ -2296,7 +2789,7 @@ var extraObj_passport_size_photo = $("#fileuploader_passport_size_photo").upload
 
 /***************************NID copy  startsss***********************************************/
 var extraObj_nid = $("#fileuploader_nid").uploadFile({
-        url:'{{URL::to("/doc/upload_now")}}',
+        url:'{{URL::to("/doc/my_upload_now")}}',
         fileName:"files",
 
         sequential:true,
@@ -2406,8 +2899,9 @@ var extraObj_nid = $("#fileuploader_nid").uploadFile({
               /*  var html = "<div><b>File Tags:</b><input type='text' name='tags' value='' class='doc_label_"+upload_counter+"' /> <br/>";
               html += "<b>Category</b>:<select name='category'><option value='1'>ONE</option><option value='2'>TWO</option></select>";
               */
+              
               var html="<div><input type='text' name='description' class='nid_desc' placeholder='Description' />";
-              html += "<input type='text' name='doc_index' value='"+upload_counter+"'  /><input type='text' value='nid_photo' name='doc_type' /></div>";
+              html += "<input type='text' name='doc_index' value='"+upload_counter+"'  /><input type='text' value='nid_photo' name='doc_type' /></div><input type='hidden' name='_token'  value='"+token_value+"' />";
               return html;        
           },
           autoSubmit:false,
@@ -2478,7 +2972,7 @@ var extraObj_nid = $("#fileuploader_nid").uploadFile({
 
 /******************Passport Copy beginsss*******************/
 var extraObj_passport_copy = $("#fileuploader_passport_copy").uploadFile({
-        url:'{{URL::to("/doc/upload_now")}}',
+        url:'{{URL::to("/doc/my_upload_now")}}',
         fileName:"files",
 
         sequential:true,
@@ -2579,8 +3073,14 @@ var extraObj_passport_copy = $("#fileuploader_passport_copy").uploadFile({
               /*  var html = "<div><b>File Tags:</b><input type='text' name='tags' value='' class='doc_label_"+upload_counter+"' /> <br/>";
               html += "<b>Category</b>:<select name='category'><option value='1'>ONE</option><option value='2'>TWO</option></select>";
               */
+
+
               var html="<div><input type='text' name='description' class='passport_copy_desc' placeholder='Description' />";
-              html += "<input type='text' name='doc_index' value='"+upload_counter+"'  /><input type='text' value='passport_copy' name='doc_type' /></div>";
+              html += "<input type='text' name='doc_index' value='"+upload_counter+"'  /><input type='text' value='passport_copy' name='doc_type' /></div><input type='hidden' name='_token'  value='"+token_value+"' />";
+
+
+              /*var html="<div><input type='text' name='description' class='passport_copy_desc' placeholder='Description' />";
+              html += "<input type='text' name='doc_index' value='"+upload_counter+"'  /><input type='text' value='passport_copy' name='doc_type' /></div></div><input type='text' name='_token'  value='"+token_value+"' />";*/
               return html;        
           },
           autoSubmit:false,
@@ -2651,7 +3151,7 @@ var extraObj_passport_copy = $("#fileuploader_passport_copy").uploadFile({
 
 
 var extraObj_medical_doc = $("#fileuploader_medical_doc").uploadFile({
-        url:'{{URL::to("/doc/upload_now")}}',
+        url:'{{URL::to("/doc/my_upload_now")}}',
         fileName:"files",
 
         sequential:true,
@@ -2750,7 +3250,7 @@ var extraObj_medical_doc = $("#fileuploader_medical_doc").uploadFile({
               html += "<b>Category</b>:<select name='category'><option value='1'>ONE</option><option value='2'>TWO</option></select>";
               */
               var html="<div><input type='text' name='description' class='medical_doc_desc' placeholder='Description' />";
-              html += "<input type='text' name='doc_index' value='"+upload_counter+"'  /><input type='text' value='medical_photo' name='doc_type' /></div>";
+              html += "<input type='text' name='doc_index' value='"+upload_counter+"'  /><input type='text' value='medical_photo' name='doc_type' /></div><input type='hidden' name='_token'  value='"+token_value+"' />";
               return html;        
           },
           autoSubmit:false,
@@ -2823,7 +3323,7 @@ var extraObj_medical_doc = $("#fileuploader_medical_doc").uploadFile({
 /******************Calling Process Doc startssss***************************************/
     
 var extraObj_calling_doc = $("#fileuploader_calling_doc").uploadFile({
-        url:'{{URL::to("/doc/upload_now")}}',
+        url:'{{URL::to("/doc/my_upload_now")}}',
         fileName:"files",
 
         sequential:true,
@@ -2920,7 +3420,7 @@ var extraObj_calling_doc = $("#fileuploader_calling_doc").uploadFile({
               html += "<b>Category</b>:<select name='category'><option value='1'>ONE</option><option value='2'>TWO</option></select>";
               */
               var html="<div><input type='text' name='description' class='calling_doc_desc' placeholder='Description' />";
-              html += "<input type='text' name='doc_index' value='"+upload_counter+"'  /><input type='text' value='calling_photo' name='doc_type' /></div>";
+              html += "<input type='text' name='doc_index' value='"+upload_counter+"'  /><input type='text' value='calling_photo' name='doc_type' /></div><input type='hidden' name='_token'  value='"+token_value+"' />";
               return html;        
           },
           autoSubmit:false,
@@ -2991,7 +3491,7 @@ var extraObj_calling_doc = $("#fileuploader_calling_doc").uploadFile({
 /******************Visa/Stamping doc startsss***************************************************/
   
       var extraObj_visa_stamping_doc = $("#fileuploader_visa_stamping_doc").uploadFile({
-        url:'{{URL::to("/doc/upload_now")}}',
+        url:'{{URL::to("/doc/my_upload_now")}}',
         fileName:"files",
 
         sequential:true,
@@ -3096,7 +3596,7 @@ var extraObj_calling_doc = $("#fileuploader_calling_doc").uploadFile({
               html += "<b>Category</b>:<select name='category'><option value='1'>ONE</option><option value='2'>TWO</option></select>";
               */
               var html="<div><input type='text' name='description' class='visa_stamping_doc_desc' placeholder='Description' />";
-              html += "<input type='text' name='doc_index' value='"+upload_counter+"'  /><input type='text' value='visa_stamping_photo' name='doc_type' /></div>";
+              html += "<input type='text' name='doc_index' value='"+upload_counter+"'  /><input type='text' value='visa_stamping_photo' name='doc_type' /></div><input type='hidden' name='_token'  value='"+token_value+"' />";
               return html;        
           },
           autoSubmit:false,
@@ -3169,7 +3669,7 @@ var extraObj_calling_doc = $("#fileuploader_calling_doc").uploadFile({
 /******************Flight doc startssssss********************************************************/
 
         var extraObj_flight_doc = $("#fileuploader_flight_doc").uploadFile({
-        url:'{{URL::to("/doc/upload_now")}}',
+        url:'{{URL::to("/doc/my_upload_now")}}',
         fileName:"files",
 
         sequential:true,
@@ -3282,7 +3782,7 @@ var extraObj_calling_doc = $("#fileuploader_calling_doc").uploadFile({
               html += "<b>Category</b>:<select name='category'><option value='1'>ONE</option><option value='2'>TWO</option></select>";
               */
               var html="<div><input type='text' name='description' class='flight_doc_desc' placeholder='Description' />";
-              html += "<input type='text' name='doc_index' value='"+upload_counter+"'  /><input type='text' value='flight_photo' name='doc_type' /></div>";
+              html += "<input type='text' name='doc_index' value='"+upload_counter+"'  /><input type='text' value='flight_photo' name='doc_type' /></div><input type='hidden' name='_token'  value='"+token_value+"' />";
               return html;        
           },
           autoSubmit:false,
@@ -3455,6 +3955,8 @@ function showResponse(responseText, statusText, xhr, $form)  {
         
 
       if(responseText.success==false){
+
+        window.scrollTo(0,0);
 
         $("#result").html('<span class="text-danger">Please fix the problems</span>');
 

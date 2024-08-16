@@ -119,12 +119,12 @@
 
             {data: 'email', name: 'email'},
 
-            {data: 'nationality', name: 'nationality'},
+            {data: 'nationality_found', name: 'nationality'},
             {data: 'organization_category', name: 'organization_category'},
 
-            {data: 'company', name: 'company'},
+            {data: 'company_found', name: 'company'},
 
-            {data: 'country', name: 'country'},
+            {data: 'country_found', name: 'country'},
             
             
 

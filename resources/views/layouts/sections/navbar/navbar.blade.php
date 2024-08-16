@@ -46,15 +46,35 @@ $navbarDetached = ($navbarDetached ?? '');
         <ul class="navbar-nav flex-row align-items-center ms-auto">
 
           <!-- Place this tag where you want the button to render. -->
-          <li class="nav-item lh-1 me-3">
+          <!-- <li class="nav-item lh-1 me-3">
             <a class="github-button" href="https://github.com/themeselection/sneat-html-laravel-admin-template-free" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star themeselection/sneat-html-laravel-admin-template-free on GitHub">Star</a>
-          </li>
+          </li> -->
 
           <!-- User -->
           <li class="nav-item navbar-dropdown dropdown-user dropdown">
             <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
               <div class="avatar avatar-online">
                 <img src="{{ asset('assets/img/avatars/1.png') }}" alt class="w-px-40 h-auto rounded-circle">
+
+
+
+                <a class="dropdown-item" href="{{ route('logout') }}"
+                                       onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">
+                                                     <i class='bx bx-power-off me-2'></i>
+                                        <!-- {{ __('Logout') }} -->
+
+                        
+                        <span class="align-middle">Log Out</span>
+
+
+                                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                            @csrf
+                                        </form>
+                  </a>
+
+
+
               </div>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
@@ -67,10 +87,23 @@ $navbarDetached = ($navbarDetached ?? '');
                       </div>
                     </div>
                     <div class="flex-grow-1">
-                      <span class="fw-semibold d-block">{{auth()->user()->first_name.' '.auth()->user()->middle_name.' '.auth()->user()->last_name}}</span>
-                      <?php
+                      <span class="fw-semibold d-block">
+                        <?php
+                        if(auth()->user()){
 
-                      $user_type=auth()->user()->user_type;
+                          echo auth()->user()->first_name.' '.auth()->user()->middle_name.' '.auth()->user()->last_name;
+
+                        }
+                        
+
+                        ?>
+                      </span>
+                      <?php
+                      $user_type=-1;
+                      if(auth()->user()){
+                        $user_type=auth()->user()->user_type;  
+                      }  
+                      
                       $user_type_name="";
 
                       if($user_type==0){
@@ -127,7 +160,7 @@ $navbarDetached = ($navbarDetached ?? '');
                                         {{ __('Logout') }}
 
                         
-                        <!-- <span class="align-middle">Log Out</span> -->
+                        <span class="align-middle">Log Out</span>
 
 
                                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">

@@ -1,5 +1,6 @@
 {
   "menu": [
+    
     {
       "url": "/home",
       "name": "Dashboard",
@@ -7,145 +8,396 @@
       "slug": "tables-basic"
     },
 
-    {
-      "url": "/candidates/all",
-      "name": "Candidates",
-      "icon": "menu-icon tf-icons bx bx-group",
-      "slug": "show-candidates"
-    },
 
-
-
-    {
-      "url": "/calling/all",
-      "name": "Calling",
-      "icon": "menu-icon tf-icons bx bx-phone-call",
-      "slug": "calling-all"
-    },
-
-
-
-    {
-      "url": "/medical-formalities/all",
-      "name": "Medical Formalities",
-      "icon": "menu-icon tf-icons bx bx-plus-medical",
-      "slug": "medical-formalities-all"
-    },
 
     
 
-    
-    {
-      "url": "/working-category/all",
-      "name": "Working Category",
-      "icon": "menu-icon tf-icons bx bx-task",
-      "slug": "working-category-all"
-    },
-
-
 
     {
-      "url": "/visa/all",
-      "name": "Visa Sampling/E-visa",
-      "icon": "menu-icon tf-icons bx bx-landscape",
-      "slug": "visa-all"
-    },
-
-    {
-      "url": "/smart-card/all",
-      "name": "Smart Card",
-      "icon": "menu-icon tf-icons bx bx-card",
-      "slug": "smart-card-all"
-    },
-
-    {
-      "url": "/flight/all",
-      "name": "Flight Details",
-      "icon": "menu-icon tf-icons bx bxs-plane-take-off",
-      "slug": "flight-all"
-    },
-    
-
-    
-    
-
-    {
-      "url": "/user/add",
-      "name": "Add Candidates",
+      "name": "Approve/Disapprove",
       "icon": "menu-icon tf-icons bx bx-user",
-      "slug": "user-add"
-    },
-
-
-    {
-      "url": "/agent/add",
-      "name": "Add Agents",
-      "icon": "menu-icon tf-icons bx bx-user",
-      "slug": "agent-add"
-    },
-
-    {
-      "name": "Company",
-      "icon": "menu-icon tf-icons bx bx-dollar-circle",
-      "slug": "create",
+      "slug": "agent-add",
       "submenu": [
+        
         {
-          "url": "/company-category/create",
-          "name": "Create Company Category",
-          "slug": "create"
-          
+            "url": "/teachersandstaff",
+            "name": "Teacher and Staff",
+            
+            "slug": "teacher-staff"
         },
 
 
         {
-          "url": "/company-category/all",
-          "name": "Company Category List",
-          "slug": "create"
+          "url": "/fujala",
+          "name": "Fujala",
+          "slug": "fujala-all"
           
         },
 
         {
-          "url": "/company-create/make",
-          "name": "Create a Company",
-          "slug": "create"
+          "url": "/students",
+          "name": "Student/Abna",
+          "slug": "student-abna"
           
         },
         {
-          "url": "/company/all",
-          "name": "Company List",
-          "slug": "pages-misc-under-maintenance"
+          "url": "/donors",
+          "name": "Donors",
+          "slug": "donors-all"
+          
+        },
+        {
+          "url": "/volunteers",
+          "name": "Volunteer",
+          "slug": "volunteers-all"
           
         }
+
+        
+        
       ]
     },
 
 
     {
-      "name": "Payment",
-      "icon": "menu-icon tf-icons bx bx-dollar-circle",
-      "slug": "create",
+      
+      "name": "Majlishe Shura",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "tables-basic",
       "submenu": [
+
         {
-          "url": "/payment/create-schedule",
-          "name": "Create Schedule",
-          "slug": "create"
+          "url": "/masjlishe-shura/add",
+          "name": "Add Majlishe Shura",
+          "slug": "masjlishe-shura-add"
+          
+        },
+        
+        {
+            "url": "/masjlishe-shura/all",
+            "name": "All",
+            
+            "slug": "masjlishe-shura-all"
+        }
+
+
+        
+
+        
+        
+      ]
+    },
+
+
+
+    {
+      
+      "name": "Foundation Parishad",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "tables-basic",
+      "submenu": [
+
+        {
+          "url": "/foundation-committee/add",
+          "name": "Add Foundation Parishad",
+          "slug": "foundation-committee-add"
+          
+        },
+        
+        {
+            "url": "/foundation-committee/all",
+            "name": "All",
+            
+            "slug": "foundation-committee-all"
+        }
+
+
+        
+
+        
+        
+      ]
+    },
+
+
+
+    {
+      
+      "name": "Fujala High Committee",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "tables-basic",
+      "submenu": [
+
+        {
+          "url": "/fujala-high-committee/add",
+          "name": "Add Fujala High Committe",
+          "slug": "fujala-high-committee-add"
+          
+        },
+        
+        {
+            "url": "/fujala-high-committee/all",
+            "name": "All",
+            
+            "slug": "fujala-high-committee-all"
+        }
+
+
+        
+
+        
+        
+      ]
+    },
+
+
+    {
+      
+      "name": "Notice Board",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "tables-basic",
+      "submenu": [
+
+        {
+          "url": "/notice/add",
+          "name": "Add Notice",
+          "slug": "notice-add"
+          
+        },
+        
+        {
+            "url": "/noticeboard",
+            "name": "All notices",
+            
+            "slug": "notice-all"
+        }
+
+
+        
+
+        
+        
+      ]
+    },
+
+    {
+      
+      "name": "Activities",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "tables-basic",
+      "submenu": [
+
+        {
+          "url": "/activities/create",
+          "name": "Add Activity",
+          "slug": "activity-add"
+          
+        },
+        
+        {
+            "url": "/activities",
+            "name": "All activities",
+            
+            "slug": "activities-all"
+        }
+
+
+        
+
+        
+        
+      ]
+    },
+
+    {
+      
+      "name": "Jobs",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "tables-basic",
+      "submenu": [
+
+        {
+          "url": "/jobs/approved",
+          "name": "Approved Jobs",
+          "slug": "jobs-approved"
+          
+        },
+        
+        {
+          "url": "/jobs/unapproved",
+          "name": "Unpproved Jobs",
+          "slug": "jobs-unapproved"
+          
+        }
+
+
+        
+
+        
+        
+      ]
+    },
+
+    {
+      
+      "name": "Questions",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "tables-basic",
+      "submenu": [
+
+
+        {
+          "url": "/questions/add",
+          "name": "Add Questions",
+          "slug": "questions-add"
+          
+        },
+        {
+          "url": "/questions/all",
+          "name": "All Questions",
+          "slug": "questions-all"
+          
+        }
+        
+
+
+        
+
+        
+        
+      ]
+    },
+    {
+      
+      "name": "About Us",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "about-us",
+      "submenu": [
+
+
+        {
+          "url": "/about/us/input",
+          "name": "About Us input",
+          "slug": "about-us-input"
+          
+        }
+        
+
+
+        
+
+        
+        
+      ]
+    },
+
+    {
+      
+      "name": "Mission Vission",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "about-us",
+      "submenu": [
+
+
+        {
+          "url": "/mission/input",
+          "name": "Mission input",
+          "slug": "about-us-input"
           
         },
 
         {
-          "url": "/payment/make",
-          "name": "Make Payment",
-          "slug": "create"
-          
-        },
-        {
-          "url": "/pages/misc-under-maintenance",
-          "name": "Show Schedules",
-          "slug": "pages-misc-under-maintenance"
+          "url": "/vision/input",
+          "name": "Vision input",
+          "slug": "vision-input"
           
         }
+        
+
+
+        
+
+        
+        
       ]
+    },
+
+    {
+      
+      "name": "Contact Us",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "contact-us",
+      "submenu": [
+
+
+        {
+          "url": "/contactus/input",
+          "name": "Contact Us input",
+          "slug": "contact-us-input"
+          
+        }
+        
+
+
+        
+
+        
+        
+      ]
+    },
+
+
+    {
+      
+      "name": "Exam Results",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "exam-results",
+      "submenu": [
+
+        {
+          "url": "/results/all",
+          "name": "Exam Results All",
+          "icon": "menu-icon tf-icons bx bx-home-circle",
+          "slug": "exam-results-all"
+              
+        },
+        {
+          "url": "/results/input",
+          "name": "Exam Result Input",
+          "icon": "menu-icon tf-icons bx bx-home-circle",
+          "slug": "exam-results-input"
+              
+        }
+        
+
+
+        
+
+        
+        
+      ]
+    },
+
+   {
+      "url": "/feedback",
+      "name": "Feedback",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "feedback"
     }
+
+
+
+    
+
+
+    
+
+
+
+
+
+
+    
 
 
     

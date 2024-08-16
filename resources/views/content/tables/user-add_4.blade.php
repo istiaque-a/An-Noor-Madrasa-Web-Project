@@ -110,7 +110,7 @@
 
             <div class="col-sm-3 form-group required">
               <label for="date_of_birth" class="form-label control-label">Date of Birth</label>
-              <input type="text" name="date_of_birth" class="form-control" id="date_of_birth" placeholder="Date of Birth" value="" >
+              <input type="text" name="date_of_birth" class="form-control" id="date_of_birth" placeholder="Date of Birth" value=""  readonly>
 
               <div class="invalid-feedback" id="date_of_birth_error">
                 Date of birth is necessary
@@ -211,7 +211,7 @@
 
             <div class="col-sm-3">
               <label for="passport_expiry_date" class="form-label">Passport Expiry Date</label>
-              <input type="text" name="passport_expiry_date" id="passport_expiry_date" class="form-control" placeholder="Passport Expiry Date" value="">
+              <input type="text" name="passport_expiry_date" id="passport_expiry_date" class="form-control" placeholder="Passport Expiry Date" value="" readonly>
               
               <div class="invalid-feedback" id="passport_expiry_date_error">
                 Passport expiry date is necessary
@@ -224,7 +224,7 @@
 
           <div class="col-sm-3">
               <label for="passport_submission_date" class="form-label">Passport Receiving  Date</label>
-              <input type="text" name="passport_submission_date" id="passport_submission_date" class="form-control" placeholder="Passport Submission  Date" value="">
+              <input type="text" name="passport_submission_date" id="passport_submission_date" class="form-control" placeholder="Passport Submission  Date" value="" readonly>
 
               <div class="invalid-feedback" id="nid_number_error">Passport Receive Date is necessary</div>
               
@@ -390,8 +390,8 @@
         
         <div class="row mb-3 gy-3">
 
-          <div class="col-sm-4">
-            <label for="country"  class="form-label">COUNTRY</label>
+          <div class="col-sm-3">
+            <label for="country"  class="form-label">DESTINATION COUNTRY</label>
             <!-- <input type="text" name="country" id="country" class="form-control" value="" placeholder="Country"> -->
             <select id="country" name="country" class="form-control" autocomplete=off>
               <option value="0">Select a Country</option>
@@ -413,7 +413,7 @@
             <div class="invalid-feedback" id="country_error">Country is necessary</div>
           </div>
 
-          <div class="col-sm-4">
+          <div class="col-sm-2">
             <label class="form-label" for="state_province">STATE/PROVINCE</label>
             <input type="text" name="state_province" class="form-control" id="state_province" value="" placeholder="State/Province">
 
@@ -423,26 +423,29 @@
 
 
 
-          <div class="col-sm-4">
+          <div class="col-sm-2">
             <label class="form-label" for="zip">Zip Code</label>
             <input type="text" name="zip" id="zip" class="form-control" value="" placeholder="Zip Code" value="">
             <div class="invalid-feedback" id="zip_error">ZIP is necessary</div>
+          </div>
+
+
+          <div class="col-sm-5">
+            <label for="email"  class="form-label">EMAIL</label>
+            <input type="text" name="email" id="email" class="form-control" value="" placeholder="Email">
+            <div class="invalid-feedback" id="email_error">A valid and unique email is necessary</div>
           </div>
           
         </div><!-- end of class row -->
 
 
 
-        <div class="row  mb-3 gy-3">
+          <div class="row  mb-3 gy-3">
 
-          <div class="col-sm-4">
-            <label for="email"  class="form-label">EMAIL</label>
-            <input type="text" name="email" id="email" class="form-control" value="" placeholder="Email">
-            <div class="invalid-feedback" id="email_error">A valid and unique email is necessary</div>
-          </div>
+          
 
-          <div class="col-sm-4">
-            <label class="form-label" for="phone">PHONE</label>
+          <div class="col-sm-3">
+            <label class="form-label" for="phone">Candidate's PHONE</label>
             <input type="text" name="phone" class="form-control" id="phone" value="" placeholder="Phone">
             <div class="invalid-feedback" id="phone_error">Phone number is necessary</div>
             
@@ -450,12 +453,51 @@
 
 
 
-          <div class="col-sm-4">
-                <label for="organization_category"  class="form-label">Organization Category</label>
-                <input type="text" name="organization_category" id="organization_category" class="form-control" value="" placeholder="Organization Category">
-                <div class="invalid-feedback" id="organization_category_error"></div>
-          </div>
+        <div class="col-sm-3">
+            <label class="form-label" for="guardian_phone">Guardian's PHONE</label>
+            <input type="text" name="guardian_phone" class="form-control" id="guardian_phone" value="" placeholder="Guardian's Phone">
+            <div class="invalid-feedback" id="guardian_phone_error">Guardian's phone number is necessary</div>
+            
+        </div>          
+
+
+
+
+
+        <div class="col-sm-3">
+            <label class="form-label" for="spouse_sibling_phone">Spouse / Sibling's PHONE</label>
+            <input type="text" name="spouse_sibling_phone" class="form-control" id="spouse_sibling_phone" 
+            value="" placeholder="Spouse / Sibling's Phone">
+            <div class="invalid-feedback" id="spouse_sibling_phone_error">Spouse/Sibling's phone number is necessary</div>
+            
+        </div>          
+
+
+
+
+        <div class="col-sm-3">
+            <label class="form-label" for="overseas_phone">overseas PHONE</label>
+            <input type="text" name="overseas_phone" class="form-control" id="overseas_phone" value="" placeholder="Overseas Phone">
+            <div class="invalid-feedback" id="overseas_phone_error">Overseas phone number is necessary</div>
+            
+        </div>          
+
+
+        </div><!-- end of class row -->
+
+        <div class="row  mb-3 gy-3">
+
           
+
+          <!-- <div class="col-sm-4">
+            <label class="form-label" for="phone">PHONE</label>
+            <input type="text" name="phone" class="form-control" id="phone" value="" placeholder="Phone">
+            <div class="invalid-feedback" id="phone_error">Phone number is necessary</div>
+            
+          </div>
+ -->
+
+
         </div><!-- end of class row -->
 
 
@@ -479,7 +521,7 @@
                             ?>
 
                             <option value="<?php echo $company_indiv->id; ?>">
-                              <?php echo $company_indiv->company_name;  ?></option>
+                              <?php echo $company_indiv->company_name;  ?> (<?php echo $company_indiv->company_type; ?>)</option>
 
                             <?php
 
@@ -494,7 +536,17 @@
 
 
 
-          <div class="col-sm-3">
+
+          <div class="col-sm-2">
+                <label for="organization_category"  class="form-label">Organization Category</label>
+                <input type="text" name="organization_category" id="organization_category" class="form-control" value="" placeholder="Organization Category">
+                <div class="invalid-feedback" id="organization_category_error"></div>
+          </div>
+          
+
+
+
+          <div class="col-sm-2">
             <label class="form-label" for="medical_centre">Medical Center</label>
             <input type="text" name="medical_centre" class="form-control" id="medical_centre" value="" placeholder="Medical Centre">
             <div class="invalid-feedback" id="medical_centre_error"></div>
@@ -503,15 +555,15 @@
 
 
 
-          <div class="col-sm-3">
+          <div class="col-sm-2">
             <label class="form-label" for="medical_date">Medical Date</label>
-            <input type="text" name="medical_date" class="form-control" id="medical_date" value="" placeholder="Medical Date">
+            <input type="text" name="medical_date" class="form-control" id="medical_date" value="" placeholder="Medical Date" readonly>
             <div class="invalid-feedback" id="medical_date_error"></div>
             
           </div>
 
 
-          <div class="col-sm-3">
+          <div class="col-sm-2">
 
              <label  class="form-label">Medical Condition</label>
 
@@ -524,6 +576,14 @@
                   <input class="form-check-input" type="radio" name="medical_condition" id="medical_condition_unfit" value="0" >
                   <label class="form-label" for="marital_status2">
                   Unfit
+                  </label>
+                </div>
+
+
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="medical_condition" id="medical_condition_unfit" value=""  checked>
+                  <label class="form-label" for="marital_status2">
+                  UnKnown
                   </label>
                 </div>
 
@@ -553,7 +613,7 @@
 
           <div class="col-sm-4">
             <label class="form-label" for="departure_date">Departure Date</label>
-            <input type="text" name="departure_date" class="form-control" id="departure_date" value="" placeholder="Departure Date">
+            <input type="text" name="departure_date" class="form-control" id="departure_date" value="" placeholder="Departure Date" readonly>
             <div class="invalid-feedback" id="departure_date_error"></div>
             
           </div>
@@ -561,7 +621,7 @@
 
           <div class="col-sm-4">
             <label class="form-label" for="esd_to_reach">ESD to reach</label>
-            <input type="text" name="esd_to_reach" class="form-control" id="esd_to_reach" value="" placeholder="ESD to Reach">
+            <input type="text" name="esd_to_reach" class="form-control" id="esd_to_reach" value="" placeholder="ESD to Reach" readonly>
             <div class="invalid-feedback" id="esd_to_reach_error"></div>
             
           </div>

@@ -17,6 +17,7 @@ use App\Models\Company;
 
 use DataTables;
 use Auth;
+use DB;
 
 class Basic extends Controller
 {
@@ -42,7 +43,7 @@ public function __construct()
     $user_id_logged_in = Auth::user()->id;    
     if ($request->ajax()) {
 
-            $data=User::where(['added_by'=> $user_id_logged_in])->get();
+            $data=User::where(['added_by'=> $user_id_logged_in,'user_type'=>2,'passport_returned'=>0])->get();
 
  
             return Datatables::of($data)
@@ -97,7 +98,10 @@ public function __construct()
 
                                 $agent_found=User::find($agent_id);
 
-                                $agent_name=$agent_found->first_name.' '.$agent_found->middle_name.' '.$agent_found->last_name;
+                                if($agent_found){
+                                        $agent_name=$agent_found->first_name.' '.$agent_found->middle_name.' '.$agent_found->last_name;
+
+                                    }
 
                             }    
 
@@ -105,6 +109,116 @@ public function __construct()
 
 
                     })
+
+
+
+              ->addColumn('nationality_found', function($data){
+
+
+                            $nationality=$data->nationality;
+
+                            $nationality_name="";
+
+                            $results=DB::table('countries')->where('id',$nationality)->get();    
+
+                            
+
+                                foreach($results as $result_indiv){
+
+                                    $nationality_name= $result_indiv->nationality ;
+
+                                }
+
+
+
+                                // $nationality_name=$query[0]->nationality;
+                            
+
+                            return $nationality_name;
+
+
+                    })
+
+
+              ->addColumn('company_found', function($data){
+
+                                $company_id = $data->company;    
+
+                                $company_name="";
+
+                                
+                                if($company_id){
+
+
+                                    $company_info=Company::find($company_id);
+                                    $company_name=$company_info->company_name;
+
+                                }
+                                
+
+                                return $company_name;
+
+
+
+              })
+
+
+
+              ->addColumn('country_found', function($data){
+
+
+                            $country=$data->country ;
+
+                            $country_name="";
+
+                            $results=DB::table('countries')->where('id',$country)->get();    
+
+                            
+
+                                foreach($results as $result_indiv){
+
+                                    $country_name= $result_indiv->en_short_name;
+
+                                }
+
+
+
+                                // $nationality_name=$query[0]->nationality;
+                            
+
+                            return $country_name;
+
+
+                    })
+
+
+
+
+              ->addColumn('passport_submission_date_found', function($data){
+
+
+                            $passport_submission_date=$data->passport_submission_date ;
+
+                            $passport_submission_date_formatted="";
+
+                            if(!empty(trim($passport_submission_date))){
+
+                                $passport_submission_date_array = explode('-', $passport_submission_date);
+
+                                $passport_submission_date_formatted=$passport_submission_date_array[2].'-'.$passport_submission_date_array[1].'-'.$passport_submission_date_array[0];
+
+                            }
+
+
+                            return $passport_submission_date_formatted;
+
+
+
+
+                    })
+
+
+
 
                     ->addColumn('status', function($row){
 
@@ -134,7 +248,7 @@ public function __construct()
 
                     })
 
-                    ->rawColumns(['status','action','full_name'])
+                    ->rawColumns(['status','action','full_name','nationality_found','company_found'])
 
                     ->make(true);
 
@@ -160,7 +274,11 @@ public function __construct()
 
                     ->addColumn('full_name', function ($data) {
 
-                        $url = url('/show/user/'.$data->id);
+                        // $url = url('/show/user/'.$data->id);
+
+                        $url = url('/show-calling/'.$data->id);
+
+                        
                       
                          return '<a href="'.$url.'">'.$data->first_name.' '.$data->last_name.
                           '</a>';
@@ -169,6 +287,92 @@ public function __construct()
                     /*->addColumn('id',function($data){
                         return '123456';
                     })*/
+
+
+
+
+                    ->addColumn('nationality_found', function($data){
+
+
+                            $nationality=$data->nationality;
+
+                            $nationality_name="";
+
+                            $results=DB::table('countries')->where('id',$nationality)->get();    
+
+                            
+
+                                foreach($results as $result_indiv){
+
+                                    $nationality_name= $result_indiv->nationality ;
+
+                                }
+
+
+
+                                // $nationality_name=$query[0]->nationality;
+                            
+
+                            return $nationality_name;
+
+
+                    })
+
+
+              ->addColumn('company_found', function($data){
+
+                                $company_id = $data->company;    
+
+                                $company_name="";
+
+                                
+                                if($company_id){
+
+
+                                    $company_info=Company::find($company_id);
+                                    $company_name=$company_info->company_name;
+
+                                }
+                                
+
+                                return $company_name;
+
+
+
+              })
+
+
+
+              ->addColumn('country_found', function($data){
+
+
+                            $country=$data->country ;
+
+                            $country_name="";
+
+                            $results=DB::table('countries')->where('id',$country)->get();    
+
+                            
+
+                                foreach($results as $result_indiv){
+
+                                    $country_name= $result_indiv->en_short_name;
+
+                                }
+
+
+
+                                // $nationality_name=$query[0]->nationality;
+                            
+
+                            return $country_name;
+
+
+                    })
+
+
+
+
 
                     ->addColumn('status', function($row){
 
@@ -244,6 +448,91 @@ public function __construct()
       
 
                             return $btn;
+
+                    })
+
+
+
+                    ->addColumn('nationality_found', function($row){
+
+                            
+                            $nationality=$row->nationality;
+
+                            $nationality_name="";
+
+                            $results=DB::table('countries')->where('id',$nationality)->get();    
+
+                            
+
+                                foreach($results as $result_indiv){
+
+                                    $nationality_name= $result_indiv->nationality ;
+
+                                }
+
+
+
+                                // $nationality_name=$query[0]->nationality;
+                            
+
+                            return $nationality_name;
+
+      
+
+                            
+
+                    })
+
+
+
+              ->addColumn('company_found', function($data){
+
+                                $company_id = $data->company;    
+
+                                $company_name="";
+
+                                
+                                if($company_id){
+
+
+                                    $company_info=Company::find($company_id);
+                                    $company_name=$company_info->company_name;
+
+                                }
+                                
+
+                                return $company_name;
+
+
+
+              })
+
+
+
+              ->addColumn('country_found', function($data){
+
+
+                            $country=$data->country ;
+
+                            $country_name="";
+
+                            $results=DB::table('countries')->where('id',$country)->get();    
+
+                            
+
+                                foreach($results as $result_indiv){
+
+                                    $country_name= $result_indiv->en_short_name;
+
+                                }
+
+
+
+                                // $nationality_name=$query[0]->nationality;
+                            
+
+                            return $country_name;
+
 
                     })
 
@@ -407,6 +696,30 @@ public function __construct()
                         return '123456';
                     })
                     */
+
+
+                    ->addColumn('company_found', function($data){
+
+                                $company_id = $data->company;    
+
+                                $company_name="";
+
+                                
+                                if($company_id){
+
+
+                                    $company_info=Company::find($company_id);
+                                    $company_name=$company_info->company_name;
+
+                                }
+                                
+
+                                return $company_name;
+
+
+
+              })
+                    
                     ->addColumn('action', function($row){
 
 
@@ -487,6 +800,89 @@ public function __construct()
 
                     })
 
+
+                    ->addColumn('nationality_found', function($data){
+
+
+                            $nationality=$data->nationality;
+
+                            $nationality_name="";
+
+                            $results=DB::table('countries')->where('id',$nationality)->get();    
+
+                            
+
+                                foreach($results as $result_indiv){
+
+                                    $nationality_name= $result_indiv->nationality ;
+
+                                }
+
+
+
+                                // $nationality_name=$query[0]->nationality;
+                            
+
+                            return $nationality_name;
+
+
+                    })
+
+
+              ->addColumn('company_found', function($data){
+
+                                $company_id = $data->company;    
+
+                                $company_name="";
+
+                                
+                                if($company_id){
+
+
+                                    $company_info=Company::find($company_id);
+                                    $company_name=$company_info->company_name;
+
+                                }
+                                
+
+                                return $company_name;
+
+
+
+              })
+
+
+
+              ->addColumn('country_found', function($data){
+
+
+                            $country=$data->country ;
+
+                            $country_name="";
+
+                            $results=DB::table('countries')->where('id',$country)->get();    
+
+                            
+
+                                foreach($results as $result_indiv){
+
+                                    $country_name= $result_indiv->en_short_name;
+
+                                }
+
+
+
+                                // $nationality_name=$query[0]->nationality;
+                            
+
+                            return $country_name;
+
+
+                    })
+
+
+
+
                     ->rawColumns(['action','full_name'])
 
                     ->make(true);
@@ -518,6 +914,78 @@ public function __construct()
         return view('content.tables.agent-add');  
 
   }// end oif function agentAdd
+
+
+  public function agentAll(Request $request){
+
+
+
+     $user_id_logged_in = Auth::user()->id;    
+    if ($request->ajax()) {
+
+            $data=User::where(['user_type'=>1])->get();
+
+ 
+            return Datatables::of($data)
+
+                    ->addIndexColumn()
+
+                    ->addColumn('full_name', function ($data) {
+
+                        $url = url('/show-personal-details/'.$data->id);
+                      
+                         /*return '<a href="'.$url.'">'.$data->first_name.' '.$data->middle_name.' '.$data->last_name.
+                          '</a>';*/
+
+
+                          return $data->first_name.' '.$data->middle_name.' '.$data->last_name;
+                      
+                      })
+
+
+
+
+
+                    ->addColumn('status', function($row){
+
+                            if($row->calling_photo==null){
+
+                              $btn = '<a href="javascript:void(0)" class="edit btn btn-warning btn-sm">Pending</a>';
+
+                            }else{
+
+                              $btn = '<a href="javascript:void(0)" class="edit btn btn-primary btn-sm">Received</a>';
+                            }
+
+      
+
+                            return $btn;
+
+                    })
+
+                    ->addColumn('action', function($row){
+
+                        $href=url('agent/edit/'.$row->id);
+
+                        $link='<a href="'.$href.'">Edit<a/>';
+
+                        return $link;
+
+
+                    })
+
+                    ->rawColumns(['status','action','full_name','nationality_found'])
+
+                    ->make(true);
+
+        }
+
+    
+
+        
+        return view('content.tables.agent-all');      
+
+  }// end of function agentAll
 
   public function userAddNow(Request $request){
 
@@ -592,11 +1060,20 @@ public function __construct()
 
        } ); 
 
+
+     $agents=User::where(['user_type'=>1])->get();
+        $countries=Country::get(); 
+
+        $divisions=Division::get();
+        $company_categories=CompanyCategory::get();
+        $companies = Company::get();
+
+
     $docs_all=Doc::where(['user_id'=>$id])->get();
 
        
 
-       return view('content.tables.showPersonalDetails',compact('user','docs_all')); 
+       return view('content.tables.showPersonalDetails',compact('user','docs_all','agents','countries','divisions','companies')); 
 
   }// end of function showPersonalDetails
 

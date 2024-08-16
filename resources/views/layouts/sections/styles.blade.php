@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="{{ asset(mix('assets/vendor/fonts/boxicons.css')) }}" />
 
 <!-- Core CSS -->
-<link rel="stylesheet" href="{{ asset(('assets/vendor/css/core.css?989898')) }}" />
+<link rel="stylesheet" href="{{ asset(('assets/vendor/css/core.css?9898')) }}" />
 <link rel="stylesheet" href="{{ asset(mix('assets/vendor/css/theme-default.css')) }}?899" />
 <link rel="stylesheet" href="{{ asset(mix('assets/css/demo.css')) }}?<?php echo rand(1,10000); ?>" />
 

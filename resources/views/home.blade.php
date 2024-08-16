@@ -1,7 +1,5 @@
 @extends('layouts/contentNavbarLayout')
 
-@section('title', 'Home')
-
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
@@ -9,13 +7,7 @@
             <div class="card">
                 <div class="card-header">{{ __('Dashboard') }}</div>
 
-                <div class="card-body ">
-                    <h3 class="text-success fw-semibold">
-                
-                     Welcome <?php 
-                      echo request()->user()->first_name.' '.request()->user()->middle_name.' '.request()->user()->last_name.'.'; 
-                    ?>
-
+                <div class="card-body">
                     @if (session('status'))
                         <div class="alert alert-success" role="alert">
                             {{ session('status') }}
@@ -23,8 +15,6 @@
                     @endif
 
                     {{ __('You are logged in!') }}
-                    </h3>
-                    
                 </div>
             </div>
         </div>

@@ -1,11 +1,11 @@
 <?php
   // Variables
   return [
-    "creatorName" => "Freelance",
+    "creatorName" => "SysDev Ltd",
     // "creatorUrl" => "https://themeselection.com",
-    "templateName" => "GlobalWings",
-    "templateDescription" => "GlobalWings",
-    "templateKeyword" => "globalwings",
+    "templateName" => "An Noor Madrasah",
+    "templateDescription" => "An Noor Madrasah",
+    "templateKeyword" => "An Noor Madrasah",
     // "licenseUrl" => "https://themeselection.com/license/",
     // "livePreview" => "https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template-free/demo/",
     // "productPage" => "https://themeselection.com/item/sneat-bootstrap-html-laravel-admin-template/",

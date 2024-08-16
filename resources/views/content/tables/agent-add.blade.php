@@ -95,7 +95,7 @@
               <!-- <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email"> -->
 
 
-            <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="Email">
+            <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required_000 autocomplete="email" placeholder="Email">
 
             @error('email')
                 <span class="invalid-feedback" role="alert">
